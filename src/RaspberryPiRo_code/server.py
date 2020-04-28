@@ -5,8 +5,6 @@ from picamera import PiCamera
 import cv2
 import socket 
 import io 
-from sensorData import *
-from byteData import *
 
 from video_socket import *
 from getData import *
