@@ -110,10 +110,10 @@ void loop()
                 direction_R = 0;
                 brake_R = 0;
                 speed_R = 255;
-                runTime = 0;
+                runTime = 1;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                receiveFlag = false;
+                //receiveFlag = false;
             }
 
             // Send move backward command
@@ -127,10 +127,10 @@ void loop()
                 direction_R = 1;
                 brake_R = 0;
                 speed_R = 255;
-                runTime = 0;
+                runTime = 1;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                receiveFlag = false;
+                //receiveFlag = false;
             }
 
             // Send turn left command
@@ -141,13 +141,13 @@ void loop()
                 direction_L = 0;
                 brake_L = 0;
                 speed_L = 200;
-                direction_R = 1;
+                direction_R = 0;
                 brake_R = 0;
                 speed_R = 200;
-                runTime = 0;
+                runTime = 1;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                receiveFlag = false;
+                //receiveFlag = false;
             }
 
             // Send turn right command
@@ -158,13 +158,13 @@ void loop()
                 direction_L = 1;
                 brake_L = 0;
                 speed_L = 200;
-                direction_R = 0;
+                direction_R = 1;
                 brake_R = 0;
                 speed_R = 200;
-                runTime = 0;
+                runTime = 1;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                receiveFlag = false;
+                //receiveFlag = false;
             }
         }
 
@@ -172,7 +172,7 @@ void loop()
         if (command == 6)
         {
             set_auto = true;
-            receiveFlag = false;
+            //receiveFlag = false;
         }
 
         // Control switch to Manual
@@ -190,28 +190,33 @@ void loop()
             runTime = 1;
 
             motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-            receiveFlag = false;
+            //receiveFlag = false;
         }
 
         // Send camera servo up command
         if (command == 8)
         {
+          //receiveFlag = false;
         }
 
         // Send camera servo down command
         if (command == 9)
         {
+          //receiveFlag = false;
         }
 
         // Send camera servo left command
         if (command == 10)
         {
+          //receiveFlag = false;
         }
 
         // Send camera servo right command
         if (command == 11)
         {
+          //receiveFlag = false;
         }
+        receiveFlag = false;
     }
 
     if (set_auto == true)
@@ -220,7 +225,7 @@ void loop()
         Serial.print("Automatic mode ");
     }
 
-    receiveFlag = false;
+    //receiveFlag = false;
 
     //delay(1);
 }
@@ -454,7 +459,7 @@ void maneuver()
         }
 
         if (forL + forR < 10.00)
-            float forD = get_fwd_distance();
+        float forD = get_fwd_distance();
         float forL = get_left_fwd_distance();
         float forR = get_right_fwd_distance();
         float aftD = get_aft_distance();

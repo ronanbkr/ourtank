@@ -11,6 +11,7 @@ address = 0x18
 def writeData(value):
     byteValue = StringToBytes(value)    
     bus.write_i2c_block_data(address,0x00,byteValue) # First byte is 0 = command byte
+    time.sleep(.1)
     return -1
 
 def StringToBytes(val):
@@ -22,7 +23,7 @@ def StringToBytes(val):
 
 def send_command(command):
     startTime = time.time()
-    time.sleep(.1)
+    #time.sleep(.1)
     print("Sending Command", command)
     
     writeData(command)
