@@ -90,7 +90,7 @@
           document.getElementById('switchVal').innerHTML = "Manual"
           command = "Manual"
         }
-        var url = 'http://localhost:5000/control?command=' + command
+        var url = 'http://192.168.0.34:5000/control?command=' + command
         send_request(url)
       } 
       function send_request(url){
@@ -104,7 +104,7 @@
         send_direction(val)
       }
       function send_direction(val){
-        var url = 'http://localhost:5000/control?direction=' + val
+        var url = 'http://192.168.0.34:5000/control?direction=' + val
         send_request(url)
     }
       
@@ -168,7 +168,7 @@
   </body>
       <script>
        // function get_data_request(){
-        //    var url = 'http://localhost:5000/get_data'
+        //    var url = 'http://192.168.0.34:5000/get_data'
          //   var xhr = new XMLHttpRequest();
           //  xhr.open("GET", url, false);
            
