@@ -1,11 +1,8 @@
 <html>
   <head>
-    <title>Video Streaming Demonstration</title>
-    <script src= 
-"https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"> 
-    </script> 
+    <title>Demonstration</title>
     <style>
-          /* The switch - the box around the slider */
+ /* The switch - the box around the slider */
       .switch {
         position: relative;
         display: inline-block;
@@ -101,66 +98,63 @@
       
       function switch_value(){
         var swit_val =  document.getElementById("switchValue")
-        console.log(swit_val.checked)
         var command = ''
         if (swit_val.checked == true){
-          document.getElementById('swit_value').innerHTML = "Auto"
+          document.getElementById('switchVal').innerHTML = "Auto"
           command = "Auto"
         }else {        
-          document.getElementById('swit_value').innerHTML = "Manual"  
+          document.getElementById('switchVal').innerHTML = "Manual"
           command = "Manual"
         }
         var url = 'http://192.168.0.34:5000/command?command=' + command
         send_request(url)
       } 
+      function send_request(url){
+         var xhr = new XMLHttpRequest();
+         xhr.open("GET", url, false);
+         xhr.send(null);         
+     }
       
-      function choose(val){
+     function choose(val){
         document.getElementById('output').innerHTML = val
         send_direction(val)
       }
+      function send_direction(val){
+        var url = 'http://localhost:5000/control?direction=' + val
+        send_request(url)
+    }
       
-      document.onkeydown = function(event) {
-          if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === " "){                        
-              document.getElementById('output').innerHTML = event.key
-              send_direction(event.key)
-          }
-        }
-
-      
-      $("#keycontrol").keyup(function(event){
-        console.log(event)
-        if (event.key=="ArrowRight"){
-          document.getElementById('output').innerHTML = "ArrowRight"
-        }
-        //if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === " "){
-        //    document.getElementById('output').innerHTML = "007"
-        //    send_direction("007")             
-        //  }
-        })
-      
+    
+    document.onkeydown = function(event) {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === " "){                        
+          document.getElementById('output').innerHTML = event.key
+          send_direction(event.key)
+      }
+      break
+    }
     </script>
 
   </head> 
   <body>
-    <h1>Video Streaming Demonstration</h1>
+    <h1>Demonstration</h1>
     
     <div class="grid-container">
       <div class="grid-item">Day/Night Camera View
-        <!--<img id="video" src="{{ url_for('video') }}" width="100%">-->
+        <img id ="video3" src="{{ url_for('video3') }}" width="100%">
       </div>
       <div class="grid-item">Processed NN View
-        <!--<img id ="video" src="{{ url_for('video') }}" width="100%">-->
+        <img id ="video4" src="{{ url_for('video4') }}" width="100%">
       </div>
       <div class="grid-item">3
         <div class="content">
           <div class="grid-container">
-            <div class="grid-item" id="keycontrol">1
+             <div class="grid-item" id="keycontrol">1
               <!-- Rounded switch -->
               <label class="switch">
                 <input id="switchValue" type="checkbox" onclick="switch_value()">
                 <span class="slider round"></span>
               </label>
-              <p id='swit_value'></p>
+              <p id='switchVal'></p>
               <br/>
               <form >
                 <button value='up' type = "button" name='Forward' onclick="choose(this.value)">Up</button>
@@ -177,8 +171,7 @@
             </div>
             
             <div class="grid-item" style="max-weight:100%">2
-            <p style="word-break: break-all;">
-            {{message.response}}
+            <p style="word-break: break-all;" id='output_data'>               
             </p>
             </div>
             
@@ -189,4 +182,24 @@
     </div>
   
   </body>
+      <script>
+       // function get_data_request(){
+        //    var url = 'http://localhost:5000/get_data'
+         //   var xhr = new XMLHttpRequest();
+          //  xhr.open("GET", url, false);
+           
+
+            //xhr.onload = function () {
+            //    if (xhr.readyState === xhr.DONE) {
+            //        if (xhr.status === 200) {
+            //            document.getElementById('output_data').innerHTML=xhr.responseText
+            //        }
+            //    }
+           // };
+           // xhr.send(null);
+          }
+        //    window.onload=setInterval(send_request.bind(null), 1000)
+        //setInterval(get_data_request.bind(null), 1000)
+        
+    </script>
 </html>
