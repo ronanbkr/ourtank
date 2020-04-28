@@ -90,12 +90,12 @@
       }
       
       function send_command(command){
-      var url = 'http://localhost:5000/command?command=' + command
+      var url = 'http://192.168.0.34:5000/command?command=' + command
       send_request(url)
       }
             
       function send_direction(direction){
-        var url = 'http://localhost:5000/control?direction=' + direction
+        var url = 'http://192.168.0.34:5000/control?direction=' + direction
         send_request(url)
       }
       
@@ -110,7 +110,7 @@
           document.getElementById('swit_value').innerHTML = "Manual"  
           command = "Manual"
         }
-        var url = 'http://localhost:5000/command?command=' + command
+        var url = 'http://192.168.0.34:5000/command?command=' + command
         send_request(url)
       } 
       
