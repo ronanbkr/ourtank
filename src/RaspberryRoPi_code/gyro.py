@@ -11,7 +11,7 @@
 import smbus
 import time
 import math
-import _thread as thread
+import thread as thread
 import threading
 
 class MinIMU_v5_pi:
