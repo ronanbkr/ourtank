@@ -1,0 +1,5 @@
+smbus
+pyserial
+pynmea2
+numpy
+python-opencv
