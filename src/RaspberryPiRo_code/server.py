@@ -38,15 +38,15 @@ def control():
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect(('192.168.0.12', 4000))
         if ('direction' in request.args):
-            if (request.args['direction'] == 'up' or request.args['direction'] =='ArrowUp'):
+            if (request.args["direction"] in ["up", "ArrowUp", "w"]):
                 client_socket.sendall('002'.encode('utf-8'))    
-            elif (request.args['direction'] == 'down' or request.args['direction'] == 'ArrowDown'):
+            elif (request.args["direction"] in ["down", "ArrowDown", "s"]):
                 client_socket.sendall('003'.encode('utf-8'))    
-            elif (request.args['direction'] == 'left' or request.args['direction'] == 'ArrowLeft'):
+            elif (request.args["direction"] in ["left", "ArrowLeft", "a"]):
                 client_socket.sendall('004'.encode('utf-8'))            
-            elif (request.args['direction'] == 'right' or request.args['direction'] == 'ArrowRight'):
+            elif (request.args["direction"] in ["right", "ArrowRight", "d"]):
                 client_socket.sendall('005'.encode('utf-8'))
-            elif (request.args['direction'] == 'stop' or request.args['direction'] == '007'):
+            elif (request.args['direction'] in ["007", "stop", ""]):
                 client_socket.sendall('007'.encode('utf-8'))
             return request.args['direction']
         elif ('command' in request.args):
@@ -71,8 +71,13 @@ def control():
 
 @app.route('/video_page',methods = ['GET'])
 def video_page():
+    try:
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect(('192.168.0.12', 4000))
+        client_socket.sendall('007'.encode('utf-8'))
+    except Exception as e:
+        print(str(e))
     return render_template('index.html')
-
 
 @app.route('/',methods=['GET'])
 def home_page():

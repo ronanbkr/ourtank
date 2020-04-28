@@ -9,6 +9,7 @@
         width: 60px;
         height: 34px;
       }
+      
 
       /* Hide default HTML checkbox */
       .switch input {
@@ -16,6 +17,8 @@
         width: 0;
         height: 0;
       }
+      
+      
 
       /* The slider */
       .slider {
@@ -41,9 +44,9 @@
         -webkit-transition: .4s;
         transition: .4s;
       }
-
+      
       input:checked + .slider {
-        background - color: #2196F3;
+        background-color: #2196F3;
       }
 
       input:focus + .slider {
@@ -62,7 +65,7 @@
       }
 
       .slider.round:before {
-        border - radius: 50%;
+        border-radius: 50%;
       }
       
       .grid-container {
@@ -75,6 +78,20 @@
         background-color: rgba(255, 255, 255, 0.8);
         border: 1px solid rgba(0, 0, 0, 0.8);
         padding: 20px;
+      }
+      
+      .controller {
+        width: fit-content;
+      }
+      
+      form {
+        align: center;
+      }
+      
+      .control {
+        width: 40px;
+        height: 40px;
+        border-radius: 50px;
       }
       
       
@@ -109,7 +126,7 @@
         var url = 'http://192.168.0.34:5000/control?command=' + command
         send_request(url)
       } 
-      function send_request(url){
+      async function send_request(url){
          var xhr = new XMLHttpRequest();
          xhr.open("GET", url, false);
          xhr.send(null);         
@@ -119,19 +136,47 @@
         document.getElementById('output').innerHTML = val
         send_direction(val)
       }
+     
+     function stop(){
+         document.getElementById('output').innerHTML = 'stop'
+         send_direction('stop')
+     }
+     
       function send_direction(val){
         var url = 'http://192.168.0.34:5000/control?direction=' + val
         send_request(url)
     }
-      
+    
+    var keyDown = false;
     
     document.onkeydown = function(event) {
-      if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === " "){                        
-          document.getElementById('output').innerHTML = event.key
-          send_direction(event.key)
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", " "].includes(event.key)){
+          event.preventDefault()
+          direction = event.key
+          if (!keyDown) {
+              keyDown = true;
+              document.getElementById('output').innerHTML = direction
+              send_direction(direction)
+              console.log(event.key)
+              console.log(keyDown)
+          }
       }
-      break
     }
+    
+    document.onkeyup = function(event) {
+        event.preventDefault()
+        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", " "].includes(event.key)) {
+            keyDown = false;
+            if (event.key === " ") {
+              return
+            }
+            document.getElementById('output').innerHTML = 'stop'
+            send_direction('stop')
+        }
+        console.log(event.key)
+        console.log(keyDown)
+    }
+
     </script>
 
   </head> 
@@ -148,7 +193,7 @@
       <div class="grid-item">3
         <div class="content">
           <div class="grid-container">
-             <div class="grid-item" id="keycontrol">1
+             <div class="grid-item" style="width: fit-content;" id="keycontrol">1
               <!-- Rounded switch -->
               <label class="switch">
                 <input id="switchValue" type="checkbox" onclick="switch_value()">
@@ -156,15 +201,20 @@
               </label>
               <p id='switchVal'></p>
               <br/>
-              <form >
-                <button value='up' type = "button" name='Forward' onclick="choose(this.value)">Up</button>
-                <button value='down' type = "button" name='Reverse' onclick="choose(this.value)">Down</button>
-                <br/>
-                <button value='left' type = "button" name='Left' onclick="choose(this.value)">Left</button>
-                <button value='right' type = "button" name='Right' onclick="choose(this.value)">Right</button>
-                <button value='stop' type = "button" name='Stop' onclick="choose(this.value)">Stop</button>
+              <div align="center" class="controller">
+                <form>
+                  <button class='control' value='up' type = "button" name='Forward' onmouseup="stop()" onmousedown="choose(this.value)">
+                    Up
+                  </button>
+                  <br/>
+                  <button class='control' value='left' type = "button" name='Left' onmouseup="stop()" onmousedown="choose(this.value)">Left</button>
+                  <button class='control' value='stop' type = "button" name='Stop' onmouseup="stop()" onmousedown="choose(this.value)">Stop</button>
+                  <button class='control' value='right' type = "button" name='Right' onmouseup="stop()" onmousedown="choose(this.value)">Right</button>
+                  <br/>
+                  <button class='control' value='down' type = "button" name='Reverse' onmouseup="stop()" onmousedown="choose(this.value)">Down</button>
 
-              </form>
+                </form>
+              </div>
               
               <p id='output'></p>    
               
@@ -182,24 +232,5 @@
     </div>
   
   </body>
-      <script>
-        function get_data_request(){
-            var url = 'http://localhost:5000/get_data'
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", url, false);
-           
-
-            xhr.onload = function () {
-                if (xhr.readyState === xhr.DONE) {
-                    if (xhr.status === 200) {
-                        document.getElementById('output_data').innerHTML=xhr.responseText
-                    }
-                }
-            };
-            xhr.send(null);
-          }
-        //    window.onload=setInterval(send_request.bind(null), 1000)
-        setInterval(get_data_request.bind(null), 1000)
-        
-    </script>
+      
 </html>
