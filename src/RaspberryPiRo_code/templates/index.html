@@ -151,7 +151,7 @@
     var keyDown = false;
     
     document.onkeydown = function(event) {
-      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", " "].includes(event.key)){
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", "c", " "].includes(event.key)){
           event.preventDefault()
           direction = event.key
           if (!keyDown) {

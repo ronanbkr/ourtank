@@ -85,7 +85,7 @@ def control():
 def video_page():
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.connect(('192.168.0.12', 4000))
+        client_socket.connect(('169.254.239.11', 4000))
         client_socket.sendall('007'.encode('utf-8'))
         #data = getData()
     except Exception as e:
