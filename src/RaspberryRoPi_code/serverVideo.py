@@ -8,7 +8,7 @@ import imutils
 
 def sendVideo():
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind(('0.0.0.0', 8000))
+        server_socket.bind(('169.254.239.11', 8000))
         server_socket.listen(0)
         print ('Video Server is live')
         (clientsocket,address)=server_socket.accept()

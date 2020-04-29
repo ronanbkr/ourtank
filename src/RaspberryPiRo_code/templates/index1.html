@@ -1,7 +1,6 @@
 <html>
   <head>
     <title>Demonstration</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <style>
  /* The switch - the box around the slider */
       .switch {
@@ -177,19 +176,7 @@
         console.log(event.key)
         console.log(keyDown)
     }
-    
-     window.setInterval(function() {
-       $.ajax({
-        type: "GET",
-        url: "/get_data",
-        async : true,
-       })
-        .done(function( data ) {
-          console.log(data);
-          document.getElementById('output_data').innerHTML=Object.values(data)
-         })
-        }, 3000); 
-    
+
     </script>
 
   </head> 
@@ -198,41 +185,49 @@
     
     <div class="grid-container">
       <div class="grid-item">Day/Night Camera View
-        <img id ="video3" src="{{ url_for('video3') }}" width="100%">
+        <!--<img id ="video3" src="{{ url_for('video3') }}" width="100%">-->
       </div>
       <div class="grid-item">Processed NN View
-        <img id ="video4" src="{{ url_for('video4') }}" width="100%">
+        <!--<img id ="video4" src="{{ url_for('video4') }}" width="100%">-->
       </div>
       <div class="grid-item">3
         <div class="content">
           <div class="grid-container">
              <div class="grid-item" style="width: fit-content;" id="keycontrol">1
-                <!-- Rounded switch -->
-                <label class="switch">
-                  <input id="switchValue" type="checkbox" onclick="switch_value()">
-                  <span class="slider round"></span>
-                </label>
-                <p id='switchVal'></p>
-                <br/>
-                <div align="center" class="controller">
-                  <form>
-                    <button class='control' value='up' type = "button" name='Forward' onmouseup="stop()" onmousedown="choose(this.value)">Up</button>
-                    <br/>
-                    <button class='control' value='left' type = "button" name='Left' onmouseup="stop()" onmousedown="choose(this.value)">Left</button>
-                    <button class='control' value='stop' type = "button" name='Stop' onmouseup="stop()" onmousedown="choose(this.value)">Stop</button>
-                    <button class='control' value='right' type = "button" name='Right' onmouseup="stop()" onmousedown="choose(this.value)">Right</button>
-                    <br/>
-                    <button class='control' value='down' type = "button" name='Reverse' onmouseup="stop()" onmousedown="choose(this.value)">Down</button>
-                  </form>
-                </div>
-                <p id='output'></p>    
+              <!-- Rounded switch -->
+              <label class="switch">
+                <input id="switchValue" type="checkbox" onclick="switch_value()">
+                <span class="slider round"></span>
+              </label>
+              <p id='switchVal'></p>
+              <br/>
+              <div align="center" class="controller">
+                <form>
+                  <button class='control' value='up' type = "button" name='Forward' onmouseup="stop()" onmousedown="choose(this.value)">
+                    Up
+                  </button>
+                  <br/>
+                  <button class='control' value='left' type = "button" name='Left' onmouseup="stop()" onmousedown="choose(this.value)">Left</button>
+                  <button class='control' value='stop' type = "button" name='Stop' onmouseup="stop()" onmousedown="choose(this.value)">Stop</button>
+                  <button class='control' value='right' type = "button" name='Right' onmouseup="stop()" onmousedown="choose(this.value)">Right</button>
+                  <br/>
+                  <button class='control' value='down' type = "button" name='Reverse' onmouseup="stop()" onmousedown="choose(this.value)">Down</button>
+
+                </form>
               </div>
-              <div class="grid-item" style="max-weight:100%">2
-                <p style="word-break: break-all;" id='output_data'>    
-                </p>            
-              </div>
+              
+              <p id='output'></p>    
+              
+            </div>
+            
+            <div class="grid-item" style="max-weight:100%">2
+            <p style="word-break: break-all;" id='output_data'>               
+            </p>
+            </div>
+            
           </div>
-      </div>  
+        </div>
+    </div>  
       <div class="grid-item">4</div>
     </div>
   

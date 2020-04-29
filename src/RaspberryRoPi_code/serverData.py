@@ -5,7 +5,7 @@ import json
 
 def sendData():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('0.0.0.0', 7000))
+    server_socket.bind(('169.254.239.11', 7000))
     server_socket.listen(0)
     while True:        
         data = main()

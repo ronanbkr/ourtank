@@ -3,7 +3,7 @@ import json
 
 def getData(command):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('0.0.0.0', 3000))
+    server_socket.bind(('169.254.239.11', 3000))
     server_socket.listen(5)
     while True:        
         (clientsocket,address)=server_socket.accept()
