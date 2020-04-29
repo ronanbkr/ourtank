@@ -6,7 +6,7 @@ import struct
 
 def client3():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect(('192.168.0.12', 8000))
+    client_socket.connect(('169.254.239.11', 8000))
     payload_size = struct.calcsize("I")
     data=b''
     while True:
