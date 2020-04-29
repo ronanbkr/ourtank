@@ -61,6 +61,7 @@ def control():
             elif (request.args['direction'] in ["c"]):
                 client_socket.sendall('012'.encode('utf-8'))
             return request.args['direction']
+            
         elif ('command' in request.args):
             command = request.args['command']
             try:
