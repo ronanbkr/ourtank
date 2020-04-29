@@ -107,6 +107,9 @@ def image_processing():
         #cv2.imshow("FrameServer", frame)
         #key = cv2.waitKey(1) & 0xFF
         
+        # For now print output, it will later be sent on to Ronan.
+        print(output) 
+        
         
         #print (frame)
          # Server sending frame in bytes format
@@ -134,13 +137,13 @@ def image_processing():
     
     # Socket Connection closed
     server_socket.close()
-        
+     
+  
 
     # do a bit of cleanup
     cv2.destroyAllWindows()
     vs.stop()
-    # For now print output, it will later be sent on to Ronan.
-    print(output)
+    
     
     
 image_processing()
