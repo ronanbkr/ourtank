@@ -5,11 +5,13 @@ from picamera import PiCamera
 import cv2
 import socket 
 import io 
+from flask_cors import CORS
 
 from video_socket import *
 from getData import *
 
 app = Flask(__name__)
+CORS(app)
 
 ######################## Raw Data #######################
 
@@ -29,8 +31,8 @@ def video3():
 
 @app.route('/get_data',methods=['GET'])
 def get_data():
-    data = getData()
-    return jsonify(data)
+    data=getData()
+    return (jsonify(data))
 
 @app.route('/control',methods=['GET'])
 def control():
@@ -75,8 +77,10 @@ def video_page():
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect(('192.168.0.12', 4000))
         client_socket.sendall('007'.encode('utf-8'))
+        #data = getData()
     except Exception as e:
         print(str(e))
+    #return render_template('index.html',message=jsonify(data))
     return render_template('index.html')
 
 @app.route('/',methods=['GET'])

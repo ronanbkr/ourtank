@@ -117,6 +117,9 @@ def image_processing():
         frame = p + frame
         clientsocket.sendall(frame)
         #clientsocket.close()
+        
+        # For now print output, it will later be sent on to Ronan.
+        print(output)
        
         
         # Takes a photo of the stream when c is pressed.
@@ -139,8 +142,7 @@ def image_processing():
     # do a bit of cleanup
     cv2.destroyAllWindows()
     vs.stop()
-    # For now print output, it will later be sent on to Ronan.
-    print(output)
-    
-    
-image_processing()
+   
+
+if __name__=='__main__':
+    image_processing()
