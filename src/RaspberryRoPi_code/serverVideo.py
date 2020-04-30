@@ -22,7 +22,7 @@ def sendVideo():
                                 start = time.time()
                                 rval, frame = vs.read()
                                 frame = imutils.resize(frame, width=400)
-                                frame =cv2.resize(frame, (300, 300))
+                                frame =cv2.resize(frame, (300, 225))
                                 #cv2.imshow("FrameServer", frame)
                                 #key = cv2.waitKey(1) & 0xFF
                                 #frame = pickle.dumps(frame)
