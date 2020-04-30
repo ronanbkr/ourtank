@@ -5,7 +5,18 @@
 
 bool set_auto = false;
 
-// defines pins numbers
+// Defines servo pins
+int servoPinPan = 5;
+int servoPinTilt = 6;
+Servo servo1;
+Servo servo2;
+int panAngle = 80;  // servo pan position in degrees
+int tiltAngle = 95;  // servo tilt position in degrees
+
+// Laser pin setup
+int laserPin = 52;
+
+// defines ultrasonic pin numbers
 const int fwdTrigPin = 28;
 const int fwdEchoPin = 29;
 const int lFwdTrigPin = 30;
@@ -62,8 +73,7 @@ String spin_left = "0-0-155-0-0-155-250";
 String turn_right = "1-0-155-1-0-155-250";
 String turn_left = "0-0-155-0-0-155-250";
 
-void setup()
-{
+void setup() {
     // initialize i2c as slave
     Wire.begin(SLAVE_ADDRESS);
 
@@ -81,13 +91,18 @@ void setup()
     pinMode(aftEchoPin, INPUT);   // Sets the echoPin as an Input
     pinMode(camTrigPin, OUTPUT);  // Sets the trigPin as an Output
     pinMode(camEchoPin, INPUT);   // Sets the echoPin as an Input
+
+    // Camera pan and tilt setup
+    pinMode(laserPin, OUTPUT);
+    servo1.attach(servoPinPan);
+    servo1.write(panAngle);
+    servo2.attach(servoPinTilt);
+    servo2.write(tiltAngle);
 }
 
-void loop()
-{
+void loop() {
 
-    if (receiveFlag == true)
-    {
+    if (receiveFlag == true) {
         Serial.println(temp);
         String phrase;
         phrase = String(phrase + temp);
@@ -95,13 +110,11 @@ void loop()
         Serial.println(command);
 
         // Need to add an option for manual or autonomous driving sofar 1 is auto 2,3,4,5 are fwd, rev, L and R
-        if (set_auto == false)
-        {
-            //           Drive motor activated
+        if (set_auto == false) {
+            // Manual drive motor activated
 
             // Send move forward command
-            if (command == 2)
-            {
+            if (command == 2) {
                 // Drive motor activated forward
                 Serial.println("Drive motor activated forward manual forward");
                 direction_L = 1;
@@ -113,12 +126,10 @@ void loop()
                 runTime = 1;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                //receiveFlag = false;
             }
 
             // Send move backward command
-            if (command == 3)
-            {
+            if (command == 3) {
                 // Drive motor activated reverse
                 Serial.println("Drive motor activated reverse manual reverse");
                 direction_L = 0;
@@ -130,12 +141,10 @@ void loop()
                 runTime = 1;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                //receiveFlag = false;
             }
 
             // Send turn left command
-            if (command == 4)
-            {
+            if (command == 4) {
                 // Drive motor activated left
                 Serial.println("Drive motor activated left manual left");
                 direction_L = 0;
@@ -147,12 +156,10 @@ void loop()
                 runTime = 1;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                //receiveFlag = false;
             }
 
             // Send turn right command
-            if (command == 5)
-            {
+            if (command == 5) {
                 // Drive motor activated right
                 Serial.println("Drive motor activated right manual right");
                 direction_L = 1;
@@ -164,20 +171,16 @@ void loop()
                 runTime = 1;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                //receiveFlag = false;
             }
         }
 
         // Control switch to Automatic
-        if (command == 6)
-        {
+        if (command == 6) {
             set_auto = true;
-            //receiveFlag = false;
         }
 
         // Control switch to Manual
-        if (command == 7)
-        {
+        if (command == 7) {
             set_auto = false;
             // Drive motor stoped
             Serial.println("Drive motor stopped");
@@ -190,48 +193,68 @@ void loop()
             runTime = 1;
 
             motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-            //receiveFlag = false;
-        }
-
-        // Send camera servo up command
-        if (command == 8)
-        {
-          //receiveFlag = false;
         }
 
         // Send camera servo down command
-        if (command == 9)
-        {
-          //receiveFlag = false;
+        if (command == 8) {
+            // Tilt down
+            for(tiltAngle; tiltAngle < 90; tiltAngle++) {
+                servo2.write(tiltAngle);
+            }
+        }
+
+        // Send camera servo up command
+        if (command == 9) {
+            // Tilt up
+            for(tiltAngle; tiltAngle > 90; tiltAngle--) {
+                servo2.write(tiltAngle);
+            }
         }
 
         // Send camera servo left command
-        if (command == 10)
-        {
-          //receiveFlag = false;
+        if (command == 10) {
+            // Pan left from 140 to 35 degrees pan
+            for(panAngle; panAngle > 85; panAngle--) {
+                servo1.write(panAngle);
+            }
         }
 
         // Send camera servo right command
-        if (command == 11)
-        {
-          //receiveFlag = false;
+        if (command == 11) {
+            // Pan right from 35 to 140 degrees pan
+            for(panAngle; panAngle < 85; panAngle++) {
+                servo1.write(panAngle);
+            } 
+        }
+
+        // Send camera servo center command
+        if (command == 12) {
+            // Pan center 85, Tilt center 90
+            panAngle = 85;
+            tiltAngle = 90;
+            servo1.write(panAngle);
+            servo2.write(tiltAngle);  
+        }
+
+        if (command == 13) {
+            // Activate laser 
+            digitalWrite(laserPin, HIGH);
+        }
+
+        if (command == 14) {
+            // Deactivate laser
+            digitalWrite(laserPin, LOW); 
         }
         receiveFlag = false;
     }
 
-    if (set_auto == true)
-    {
+    if (set_auto == true) {
         maneuver();
         Serial.print("Automatic mode ");
     }
-
-    //receiveFlag = false;
-
-    //delay(1);
 }
 
-float get_fwd_distance()
-{
+float get_fwd_distance() {
     // Clears the trigPin
     digitalWrite(fwdTrigPin, LOW);
     delayMicroseconds(2);
@@ -254,8 +277,7 @@ float get_fwd_distance()
     return fDistance;
 }
 
-float get_left_fwd_distance()
-{
+float get_left_fwd_distance() {
     // Clears the trigPin
     digitalWrite(lFwdTrigPin, LOW);
     delayMicroseconds(2);
@@ -278,8 +300,7 @@ float get_left_fwd_distance()
     return lFDistance;
 }
 
-float get_right_fwd_distance()
-{
+float get_right_fwd_distance() {
     // Clears the trigPin
     digitalWrite(rFwdTrigPin, LOW);
     delayMicroseconds(2);
@@ -302,8 +323,7 @@ float get_right_fwd_distance()
     return rFDistance;
 }
 
-float get_aft_distance()
-{
+float get_aft_distance() {
     // Clears the trigPin
     digitalWrite(aftTrigPin, LOW);
     delayMicroseconds(2);
@@ -325,8 +345,7 @@ float get_aft_distance()
     return aDistance;
 }
 
-float get_cam_distance()
-{
+float get_cam_distance() {
     // Clears the trigPin
     digitalWrite(camTrigPin, LOW);
     delayMicroseconds(2);
@@ -348,8 +367,7 @@ float get_cam_distance()
     return cDistance;
 }
 
-void motorControl(int direction_L, int brake_L, int speed_L, int direction_R, int brake_R, int speed_R, int runTime)
-{
+void motorControl(int direction_L, int brake_L, int speed_L, int direction_R, int brake_R, int speed_R, int runTime) {
 
     //Motor A forward full speed
     digitalWrite(12, direction_L); // Establishes forward direction of Motor A
@@ -364,24 +382,22 @@ void motorControl(int direction_L, int brake_L, int speed_L, int direction_R, in
     delay(runTime);
 }
 
-void receiveEvent(int howMany)
-{
+void receiveEvent(int howMany) {
     //    Serial.print(howMany);
-    for (int i = 0; i < howMany; i++)
-    {
+    for (int i = 0; i < howMany; i++) {
         temp[i] = Wire.read();
         temp[i + 1] = '\0'; // Add null after each char
     }
 
     //RPi first byte is cmd byte so shift everything to the left 1 pos so temp contains string
-    for (int i = 0; i < howMany; i++)
+    for (int i = 0; i < howMany; i++) {
         temp[i] = temp[i + 1];
+    }
 
     receiveFlag = true;
 }
 
-void move_command(String command)
-{
+void move_command(String command) {
     direction_L = command.substring(0, 1).toInt();
     brake_L = command.substring(2, 3).toInt();
     speed_L = command.substring(4, 7).toInt();
@@ -395,51 +411,36 @@ void move_command(String command)
     motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
 }
 
-void maneuver()
-{
+void maneuver() {
 
     float forD = get_fwd_distance();
     float forL = get_left_fwd_distance();
     float forR = get_right_fwd_distance();
 
-    if (forL < 30.00)
-    {
+    if (forL < 30.00) {
         move_command(spin_right);
-    }
-    else if (forR < 30.00)
-    {
+    } else if (forR < 30.00) {
         move_command(spin_left);
     }
 
-    if (forD > maxDist)
-    {
+    if (forD > maxDist) {
         Serial.println("Max Distance -- Forward full speed");
         move_command(move_fwd_full);
         // break;
-    }
-    else if (forD > mi1Dist && forD < maxDist)
-    {
+    } else if (forD > mi1Dist && forD < maxDist) {
         Serial.println("Mid 1 Range -- Forward Mid 1 speed");
         move_command(move_fwd_mi1);
         // break;
-    }
-    else if (forD > mi2Dist && forD < mi1Dist)
-    {
+    } else if (forD > mi2Dist && forD < mi1Dist) {
         Serial.println("Mid 2 Range -- Forward Mid 2 speed");
         move_command(move_fwd_mi2);
         // break;
-    }
-    else if (forD > minDist && forD < mi1Dist)
-    {
+    } else if (forD > minDist && forD < mi1Dist) {
         Serial.println("Min Distance -- Forward close speed");
         move_command(move_fwd_close);
         // break;
-    }
-    else
-    {
-
-        if (forD < minDist)
-        {
+    } else {
+        if (forD < minDist) {
             move_command(all_stop);
 
             float forD = get_fwd_distance();
@@ -447,13 +448,10 @@ void maneuver()
             float forR = get_right_fwd_distance();
         }
 
-        if ((forD + forL) > (forD + forR))
-        {
+        if ((forD + forL) > (forD + forR)) {
             Serial.println("Turning left");
             move_command(turn_left);
-        }
-        else
-        {
+        } else {
             Serial.println("Turning right");
             move_command(turn_right);
         }
@@ -464,23 +462,16 @@ void maneuver()
         float forR = get_right_fwd_distance();
         float aftD = get_aft_distance();
 
-        if (forL > forR)
-        {
+        if (forL > forR) {
             move_command(spin_left);
             Serial.println("Turning left");
-        }
-        else if (forL < forR)
-        {
+        } else if (forL < forR) {
             move_command(spin_right);
             Serial.println("Turning right");
-        }
-        else if (forD < aftD)
-        {
+        } else if (forD < aftD) {
             Serial.println("This vehicle is reversing");
             move_command(reverse);
-        }
-        else if (aftD < minDist)
-        {
+        } else if (aftD < minDist){
             move_command(all_stop);
         }
     }
