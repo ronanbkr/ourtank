@@ -2,7 +2,9 @@ import cv2
 import pickle
 import socket
 import struct
-
+import base64
+import numpy as np
+import time
 
 def client3():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -10,6 +12,7 @@ def client3():
     payload_size = struct.calcsize("I")
     data=b''
     while True:
+        start = time.time()
         while len(data) < payload_size:
             data += client_socket.recv(4096)
         packed_msg_size = data[:payload_size]
@@ -21,8 +24,14 @@ def client3():
         data = data[msg_size:]
         if frame_data=='':
             break
-        frame_numpy=pickle.loads(frame_data,encoding='latin1')
-        _,frame_bytes= cv2.imencode('.JPEG',frame_numpy)
+        #frame=pickle.loads(frame_data,encoding='latin1')
+        img = base64.b64decode(frame_data)
+        npimg = np.fromstring(img, dtype=np.uint8)
+        frame = cv2.imdecode(npimg, 1)
+
+        frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        _,frame_bytes= cv2.imencode('.JPEG',frame)
+        print (time.time()-start)
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n')
     #client_socket.close()
 
