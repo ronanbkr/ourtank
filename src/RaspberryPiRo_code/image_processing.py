@@ -46,6 +46,7 @@ def image_processing():
     confidence_limit = 0.5
     # loop over the frames from the video stream
     (clientsocket,address)=server_socket.accept()
+    print ('Hey')
     while True:
         # Take one frame from the video and resize it
         frame = vs.read()
@@ -108,21 +109,21 @@ def image_processing():
         #key = cv2.waitKey(1) & 0xFF
         
         # For now print output, it will later be sent on to Ronan.
-        print(output) 
+        #print(output) 
         
         
         #print (frame)
          # Server sending frame in bytes format
         
-        frame = pickle.dumps(frame)
-        size = len(frame)
+        frame_data = pickle.dumps([frame,output])
+        size = len(frame_data)
         p = struct.pack('I', size)
-        frame = p + frame
-        clientsocket.sendall(frame)
+        frame_data = p + frame_data
+        clientsocket.sendall(frame_data)
         #clientsocket.close()
         
         # For now print output, it will later be sent on to Ronan.
-        print(output)
+        #print(output)
        
         
         # Takes a photo of the stream when c is pressed.
