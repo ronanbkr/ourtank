@@ -310,10 +310,10 @@
     
     <div class="grid-container">
       <div class="grid-item">Day/Night Camera View
-        <!-- <img id ="video3" src="{{ url_for('video3') }}" width="100%"> -->
+        <img id ="video3" src="{{ url_for('video3') }}" width="100%">
       </div>
       <div class="grid-item">Processed NN View
-        <!-- <img id ="video4" src="{{ url_for('video4') }}" width="100%"> -->
+        <img id ="video4" src="{{ url_for('video4') }}" width="100%">
       </div>
       <div class="grid-item">
         <h2>Tank controls</h2>
@@ -337,21 +337,21 @@
                   <form>
                     <button id='ArrowUp' class="control"  
                   value='up' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
-                    <img src="arrow_upward.svg">
+                    <img src="/static/arrow_upward.svg">
                   </button>
                   <br/>
                     <button id='ArrowLeft' class='control' value='left' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
-                      <img src="arrow_back.svg">
+                      <img src="/static/arrow_back.svg">
                     </button>
                     <button id=' ' class='control' value='stop' type = "button" name='Stop' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
-                      <img src="stop.svg">
+                      <img src="/static/stop.svg">
                     </button>
                     <button id='ArrowRight' class='control' value='right' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
-                      <img src="arrow_forward.svg">
+                      <img src="/static/arrow_forward.svg">
                     </button>
                     <br/>
                     <button id='ArrowDown' class='control' value='down' type = "button" name='Reverse' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
-                      <img src="arrow_downward.svg">
+                      <img src="/static/arrow_downward.svg">
                     </button>
                   </form>
                 </div>

@@ -99,7 +99,7 @@ def video_page():
     except Exception as e:
         print(str(e))
     #return render_template('index.html',message=jsonify(data))
-    return render_template('index2.html')
+    return render_template('index.html')
 
 @app.route('/',methods=['GET'])
 def home_page():
