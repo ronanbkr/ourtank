@@ -183,14 +183,14 @@
         xhr.send();
       }
       
-      function send_command(command){
+      async function send_command(command){
         var url = 'http://192.168.0.34:5000/control?command=' + command
-        send_request(url)
+        await send_request(url)
       }
             
-      function send_direction(direction){
+      async function send_direction(direction){
         var url = 'http://192.168.0.34:5000/control?direction=' + direction
-        send_request(url)
+        await send_request(url)
       }
       
       function switch_value(){
@@ -204,7 +204,7 @@
           command = "Manual"
         }
         var url = 'http://192.168.0.34:5000/control?command=' + command
-        // send_request(url)
+        send_request(url)
       }
 
       function switch_lazer_value(){
@@ -222,29 +222,27 @@
         send_request(url)
       }
       
-
-      
-      async function send_request(url){
-         var xhr = new XMLHttpRequest();
-         xhr.open("GET", url, false);
-         xhr.send(null);         
-     }
+    //  async function send_request(url){
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.open("GET", url, false);
+    //     xhr.send(null);         
+    // }
       
      function choose(id, val){
         document.getElementById(id).classList.remove("control")
         document.getElementById(id).classList.add("controlPressed")
-        // send_direction(val)
+        send_direction(val)
       }
      
      function stop(id){
         document.getElementById(id).classList.remove("controlPressed")
         document.getElementById(id).classList.add("control")
-        //  send_direction('stop')
+        send_direction('stop')
      }
      
       function send_direction(val){
         var url = 'http://192.168.0.34:5000/control?direction=' + val
-        // send_request(url)
+        send_request(url)
     }
     
     var keyDown = false;
@@ -301,6 +299,18 @@
     //       document.getElementById('output_data').innerHTML=Object.values(data)
     //      })
     //     }, 3000); 
+    
+     //window.setInterval(function() {
+     //  $.ajax({
+     //   type: "GET",
+     //   url: "/get_info",
+     //   async : true,
+     //  })
+     //   .done(function( data ) {
+     //     console.log(info);
+     //     document.getElementById('output_info').innerHTML=Object.values(data)
+     //    })
+     //   }, 500); 
     
     </script>
 
@@ -376,21 +386,21 @@
                   <div align="center" class="controller">
                     <form>
                       <button id='w' class="control" 
-                    value='w' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.value)">
+                    value='w' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
                       <h4>W</h4>
                     </button>
                     <br/>
-                      <button id='a' class='control' value='a' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.value)">
+                      <button id='a' class='control' value='a' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
                         <h4>A</h4>
                       </button>
-                      <button id='c' class='control' value='c' type = "button" name='Stop' onmouseup="stop(this.id)" onmousedown="choose(this.value)">
+                      <button id='c' class='control' value='c' type = "button" name='Stop' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
                         <h4>C</h4>
                       </button>
-                      <button id='d' class='control' value='d' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.value)">
+                      <button id='d' class='control' value='d' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
                         <h4>D</h4>
                       </button>
                       <br/>
-                      <button id='s' class='control' value='s' type = "button" name='Reverse' onmouseup="stop(this.id)" onmousedown="choose(this.value)">
+                      <button id='s' class='control' value='s' type = "button" name='Reverse' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
                         <h4>S</h4>
                       </button>
                     </form>
