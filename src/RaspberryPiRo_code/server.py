@@ -6,6 +6,8 @@ import cv2
 import socket 
 import io 
 from flask_cors import CORS
+from itertools import chain
+import meinheld
 
 from video_socket import *
 from getData import *
@@ -15,10 +17,15 @@ CORS(app)
 
 ######################## Raw Data #######################
 
+@app.route('/info',methods=['GET'])
+def get_info():
+    return (jsonify(get_info()))
+
 @app.route('/video4',methods=['GET'])
 def video4():
     try:
-        return Response(client4(),mimetype='multipart/x-mixed-replace; boundary=frame')
+        result = client4()
+        return Response(result,mimetype='multipart/x-mixed-replace; boundary=frame')
     except Exception as ex:
         return str(ex)    
         
@@ -92,7 +99,7 @@ def video_page():
     except Exception as e:
         print(str(e))
     #return render_template('index.html',message=jsonify(data))
-    return render_template('index.html')
+    return render_template('index2.html')
 
 @app.route('/',methods=['GET'])
 def home_page():
@@ -100,4 +107,6 @@ def home_page():
 
 
 if __name__=='__main__':
-    app.run(host='0.0.0.0',threaded=True)
+    #app.run(host='0.0.0.0',threaded=True)
+    meinheld.listen(("0.0.0.0", 5000))
+    meinheld.run(app)

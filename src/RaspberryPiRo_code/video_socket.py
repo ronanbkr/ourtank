@@ -22,12 +22,13 @@ def client3():
         if frame_data=='':
             break
         frame_numpy=pickle.loads(frame_data,encoding='latin1')
-        #print (frame_numpy)
         _,frame_bytes= cv2.imencode('.JPEG',frame_numpy)
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n')
     #client_socket.close()
 
+info ={}
 def client4():
+    global info
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect(('0.0.0.0', 9000))
     payload_size = struct.calcsize("I")
@@ -45,7 +46,11 @@ def client4():
         if frame_data=='':
             break
         frame_numpy=pickle.loads(frame_data)
-        _,frame_bytes= cv2.imencode('.JPEG',frame_numpy)
+        _,frame_bytes= cv2.imencode('.JPEG',frame_numpy[0])
+        info=frame_numpy[1]
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n')
+        #yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n',frame_numpy[1])
     #client_socket.close()
-        
+    
+def get_info():
+    return info
