@@ -10,7 +10,7 @@ int servoPinPan = 5;
 int servoPinTilt = 6;
 Servo servo1;
 Servo servo2;
-int panAngle = 80;  // servo pan position in degrees
+int panAngle = 85;  // servo pan position in degrees
 int tiltAngle = 95;  // servo tilt position in degrees
 
 // Laser pin setup
@@ -198,15 +198,17 @@ void loop() {
         // Send camera servo down command
         if (command == 8) {
             // Tilt down
-            for(tiltAngle; tiltAngle < 90; tiltAngle++) {
-                servo2.write(tiltAngle);
+            if (tiltAngle < 105) {
+                tiltAngle++;
+                servo2.write(tiltAngle); 
             }
         }
 
         // Send camera servo up command
         if (command == 9) {
             // Tilt up
-            for(tiltAngle; tiltAngle > 90; tiltAngle--) {
+            if (tiltAngle > 0) {
+                tiltAngle--;
                 servo2.write(tiltAngle);
             }
         }
@@ -214,7 +216,8 @@ void loop() {
         // Send camera servo left command
         if (command == 10) {
             // Pan left from 140 to 35 degrees pan
-            for(panAngle; panAngle > 85; panAngle--) {
+            if (panAngle > 35) { 
+                panAngle--;
                 servo1.write(panAngle);
             }
         }
@@ -222,7 +225,8 @@ void loop() {
         // Send camera servo right command
         if (command == 11) {
             // Pan right from 35 to 140 degrees pan
-            for(panAngle; panAngle < 85; panAngle++) {
+            if (panAngle < 140) {
+                panAngle++;
                 servo1.write(panAngle);
             } 
         }
@@ -231,7 +235,7 @@ void loop() {
         if (command == 12) {
             // Pan center 85, Tilt center 90
             panAngle = 85;
-            tiltAngle = 90;
+            tiltAngle = 95;
             servo1.write(panAngle);
             servo2.write(tiltAngle);  
         }
