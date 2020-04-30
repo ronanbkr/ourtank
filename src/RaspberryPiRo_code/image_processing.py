@@ -141,7 +141,7 @@ def image_processing():
                 # break once q is pressed
                 #if key == ord("q"):
                 #    break
-        except ConnectionResetError as err:
+        except Exception as err:
             print (str(err))
     # Socket Connection closed
     server_socket.close()

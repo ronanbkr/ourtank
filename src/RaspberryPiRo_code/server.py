@@ -106,6 +106,6 @@ def home_page():
 
 
 if __name__=='__main__':
-    #app.run(host='0.0.0.0',threaded=True)
-    meinheld.listen(("0.0.0.0", 5000))
-    meinheld.run(app)
+    app.run(host='0.0.0.0',threaded=True)
+    #meinheld.listen(("0.0.0.0", 5000))
+    #meinheld.run(app)
