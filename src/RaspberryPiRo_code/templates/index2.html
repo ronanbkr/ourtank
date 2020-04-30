@@ -103,6 +103,11 @@
         xhr.open("GET", url, false);
         xhr.send();
       }
+   //   async function send_request(url){
+   //      var xhr = new XMLHttpRequest();
+   //      xhr.open("GET", url, false);
+   //      xhr.send(null);         
+   //  }
       
       function send_command(command){
       var url = 'http://192.168.0.34:5000/control?command=' + command
@@ -127,11 +132,7 @@
         var url = 'http://192.168.0.34:5000/control?command=' + command
         send_request(url)
       } 
-      async function send_request(url){
-         var xhr = new XMLHttpRequest();
-         xhr.open("GET", url, false);
-         xhr.send(null);         
-     }
+      
       
      function choose(val){
         document.getElementById('output').innerHTML = val
@@ -143,9 +144,9 @@
          send_direction('stop')
      }
      
-      function send_direction(val){
+      async function send_direction(val){
         var url = 'http://192.168.0.34:5000/control?direction=' + val
-        send_request(url)
+        await send_request(url)
     }
     
     var keyDown = false;
