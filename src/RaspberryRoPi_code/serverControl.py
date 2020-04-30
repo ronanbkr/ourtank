@@ -8,6 +8,7 @@ def sendCommand():
     server_socket.listen(5)
     while True:        
         (clientsocket,address)=server_socket.accept()
+        print ('Connected')
         command = clientsocket.recv(1024).decode('utf-8')
         send_command(command)
         
