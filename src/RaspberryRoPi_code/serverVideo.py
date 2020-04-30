@@ -27,7 +27,7 @@ def sendVideo():
                                 p = struct.pack('I', size)
                                 frame = p + frame
                                 clientsocket.sendall(frame)
-                except ConnectionResetError as err:
+                except Exception as err:
                         print (str(err))
         server_socket.close()
         vs.stop()                
