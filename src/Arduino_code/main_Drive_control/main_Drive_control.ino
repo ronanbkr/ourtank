@@ -123,7 +123,7 @@ void loop() {
                 direction_R = 0;
                 brake_R = 0;
                 speed_R = 255;
-                runTime = 1;
+                runTime = 0;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
             }
@@ -138,7 +138,7 @@ void loop() {
                 direction_R = 1;
                 brake_R = 0;
                 speed_R = 255;
-                runTime = 1;
+                runTime = 0;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
             }
@@ -153,7 +153,7 @@ void loop() {
                 direction_R = 0;
                 brake_R = 0;
                 speed_R = 200;
-                runTime = 1;
+                runTime = 0;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
             }
@@ -168,7 +168,7 @@ void loop() {
                 direction_R = 1;
                 brake_R = 0;
                 speed_R = 200;
-                runTime = 1;
+                runTime = 0;
 
                 motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
             }
