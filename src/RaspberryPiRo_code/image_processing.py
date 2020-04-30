@@ -12,6 +12,8 @@ import cv2
 import socket
 import pickle
 import struct
+import base64
+import numpy as np
 
 def image_processing():
 
@@ -119,6 +121,11 @@ def image_processing():
                  # Server sending frame in bytes format
                 
                 frame_data = pickle.dumps([frame,output])
+                #encoded, frame_byte = cv2.imencode('.JPEG', frame)
+                #frame_data = base64.b64encode(frame_byte)
+                #encoded_dict = str(output).encode('utf-8')
+                #output_data = base64.b64encode(encoded_dict)
+                #size = len(frame_data)+len(output_data)
                 size = len(frame_data)
                 p = struct.pack('I', size)
                 frame_data = p + frame_data

@@ -31,7 +31,7 @@ def client3():
 
         frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
         _,frame_bytes= cv2.imencode('.JPEG',frame)
-        print (time.time()-start)
+        #print (time.time()-start)
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n')
     #client_socket.close()
 
@@ -54,9 +54,13 @@ def client4():
         data = data[msg_size:]
         if frame_data=='':
             break
-        frame_numpy=pickle.loads(frame_data)
-        _,frame_bytes= cv2.imencode('.JPEG',frame_numpy[0])
-        info=frame_numpy[1]
+        frame=pickle.loads(frame_data)
+        #img = base64.b64decode(frame_data)
+        #npimg = np.fromstring(img, dtype=np.uint8)
+        #frame = cv2.imdecode(npimg, 1)
+        #frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        _,frame_bytes= cv2.imencode('.JPEG',frame[0])
+        info=frame[1]
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n')
         #yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n',frame_numpy[1])
     #client_socket.close()
