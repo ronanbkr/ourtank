@@ -11,11 +11,11 @@ def sendVideo():
         server_socket.bind(('169.254.239.11', 8000))
         server_socket.listen(0)
         print ('Video Server is live')
+        vs = cv2.VideoCapture(0)
         while True:
                 try:
                         (clientsocket,address)=server_socket.accept()
                         print ("Connected")
-                        vs = cv2.VideoCapture(0)
                         while True:
                                 rval, frame = vs.read()
                                 frame = imutils.resize(frame, width=400)
