@@ -4,6 +4,7 @@
 #define SLAVE_ADDRESS 0x18
 
 bool set_auto = false;
+int i = 0;
 
 // Defines servo pins
 int servoPinPan = 5;
@@ -14,7 +15,12 @@ int panAngle = 85;  // servo pan position in degrees
 int tiltAngle = 95;  // servo tilt position in degrees
 
 // Laser pin setup
-int laserPin = 52;
+int laserPin = 10;
+
+//["background", "aeroplane", "bicycle", "bird", "boat",
+//        "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
+//        "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
+//        "sofa", "train", "tvmonitor"]
 
 // defines ultrasonic pin numbers
 const int fwdTrigPin = 28;
@@ -108,6 +114,9 @@ void loop() {
         phrase = String(phrase + temp);
         command = phrase.substring(0, 3).toInt();
         Serial.println(command);
+        Serial.println(phrase);
+        
+        
 
         // Need to add an option for manual or autonomous driving sofar 1 is auto 2,3,4,5 are fwd, rev, L and R
         if (set_auto == false) {
@@ -216,8 +225,7 @@ void loop() {
         // Send camera servo left command
         if (command == 10) {
             // Pan left from 140 to 35 degrees pan
-            if (panAngle > 35) { 
-                panAngle--;
+            if (panAngle > 35) {
                 servo1.write(panAngle);
             }
         }
@@ -255,6 +263,11 @@ void loop() {
     if (set_auto == true) {
         maneuver();
         Serial.print("Automatic mode ");
+        if (command == 20) {
+          // Runs the auto investigate 
+          Serial.println("Yes its working!!!");
+          Serial.println("#####################################################################################");
+        }
     }
 }
 

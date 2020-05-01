@@ -9,8 +9,14 @@ def sendCommand():
     while True:        
         (clientsocket,address)=server_socket.accept()
         print ('Connected')
-        command = clientsocket.recv(1024).decode('utf-8')
-        send_command(command)
+        command = clientsocket.recv(2048).decode('utf-8')
+        print (command)
+        try:
+            send_command(command)
+        except Exception as ex:
+            print (ex)
+#"020-x1-33-y1-114-x2-219-y2-256-51.562-0-label"
+    
         
                 
     

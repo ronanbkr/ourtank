@@ -8,6 +8,7 @@ import imutils
 import base64
 import time
 
+
 def sendVideo():
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind(('169.254.239.11', 8000))
@@ -21,7 +22,7 @@ def sendVideo():
                         while True:
                                 start = time.time()
                                 rval, frame = vs.read()
-                                frame = imutils.resize(frame, width=400)
+                                frame = imutils.resize(frame, width=200)
                                 frame =cv2.resize(frame, (300, 225))
                                 #cv2.imshow("FrameServer", frame)
                                 #key = cv2.waitKey(1) & 0xFF
