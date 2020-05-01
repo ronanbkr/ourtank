@@ -14,9 +14,9 @@ import pickle
 import struct
 import base64
 import numpy as np
-import globals
+import globals2
 import multiprocessing
-
+count=0
 def image_processing():
     
     ### Socket
@@ -55,6 +55,7 @@ def image_processing():
             count = 0
             # loop over the frames from the video stream
             while True:
+                start =time.time()
                 # Take one frame from the video and resize it
                 frame = vs.read()
                 frame = imutils.resize(frame, width=400)
@@ -119,13 +120,16 @@ def image_processing():
                 
                 # For now print output, it will later be sent on to Ronan.
                 
-                
-                #if output != {} and output["true/false indicator"] == 1:
+                #if output !={}:
+                #    with open('output.pickle', 'wb') as handle:
+                #        pickle.dump(output, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                #print (output)
                     
-                read_thread = multiprocessing.Process(target=read_auto_mode_val, args=[output])
-                read_thread.start()
-                read_thread.join()
-               
+                if output != {} and output["true/false indicator"] == 1 and count==20:                    
+                #    read_thread = multiprocessing.Process(target=read_auto_mode_val, args=[output])
+                #    read_thread.start()
+                #    read_thread.join()
+                    send_dict(output,'020')
                 #print (frame)
                  # Server sending frame in bytes format
                 
@@ -158,6 +162,7 @@ def image_processing():
                 #if key == ord("q"):
                 #    break
                 count2+=1
+                print (time.time()-start)
         except Exception as err:
             print (str(err))
     # Socket Connection closed
@@ -171,20 +176,19 @@ def image_processing():
 
 def read_auto_mode_val(output):
     
-    print("global is " + str(globals.auto_mode_value()))
-    if globals.auto_mode_value():
+    print("global is " + str(globals2.auto_mode_value()))
+    if globals2.auto_mode_value():
         print(output)
         send_dict(output)
     
 
-def send_dict(info):
+def send_dict(info,s):
     global count
-
+    count+=1
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect(('169.254.239.11', 4000))
         #print(info)
-        s = '020'
         for v in (info.values()):
             s+="-"+str(v)
         client_socket.sendall(s.encode('utf-8'))
@@ -194,5 +198,5 @@ def send_dict(info):
         print (ex)
         
 if __name__=='__main__':
-    globals.initialize()
+    #globals2.initialize()
     image_processing()

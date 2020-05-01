@@ -1,7 +1,7 @@
 from multiprocessing import Value
 import multiprocessing
 lock = multiprocessing.Lock()
-#auto_mode = Value('b', False)
+auto_mode = Value('b', False)
 def initialize():
    lock.acquire()
    global auto_mode

@@ -24,12 +24,11 @@ def client3():
         data = data[msg_size:]
         if frame_data=='':
             break
-        #frame=pickle.loads(frame_data,encoding='latin1')
-        img = base64.b64decode(frame_data)
-        npimg = np.fromstring(img, dtype=np.uint8)
-        frame = cv2.imdecode(npimg, 1)
-
-        frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        frame=pickle.loads(frame_data,encoding='latin1')
+        #img = base64.b64decode(frame_data)
+        #npimg = np.fromstring(img, dtype=np.uint8)
+        #frame = cv2.imdecode(npimg, 1)
+        #frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
         _,frame_bytes= cv2.imencode('.JPEG',frame)
         #print (time.time()-start)
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n')

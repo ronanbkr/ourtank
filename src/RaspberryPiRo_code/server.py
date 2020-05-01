@@ -8,7 +8,7 @@ import io
 from flask_cors import CORS
 from itertools import chain
 import meinheld
-import globals
+import globals2
 import multiprocessing
 
 from video_socket import *
@@ -40,9 +40,11 @@ def get_data():
 
 @app.route('/info', methods=['GET'])
 def info():
-    return 'info'
+    with open('output.pickle', 'rb') as handle:
+        data = pickle.load(handle)
+    return jsonify(str(data))
 
-lock = multiprocessing.Lock()
+#lock = multiprocessing.Lock()
 
 @app.route('/control',methods=['GET'])
 def control():
@@ -76,14 +78,14 @@ def control():
             command = request.args['command']
             try:
                 if (command == 'Auto'):
-                    toggle_thread = multiprocessing.Process(target=globals.set_auto_mode)
-                    toggle_thread.start()
-                    toggle_thread.join()
+                    #toggle_thread = multiprocessing.Process(target=globals2.set_auto_mode)
+                    #toggle_thread.start()
+                    #toggle_thread.join()
                     client_socket.sendall('006'.encode('utf-8'))
                 elif (command == 'Manual'):
-                    toggle_thread = multiprocessing.Process(target=globals.set_manual_mode)
-                    toggle_thread.start()
-                    toggle_thread.join()
+                    #toggle_thread = multiprocessing.Process(target=globals2.set_manual_mode)
+                    #toggle_thread.start()
+                    #toggle_thread.join()
                     client_socket.sendall('007'.encode('utf-8'))
                 print (command)
                 return command

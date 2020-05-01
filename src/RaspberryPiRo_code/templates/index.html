@@ -308,8 +308,7 @@
         async : true,
        })
         .done(function( data ) {
-          console.log(info);
-          document.getElementById('output_info').innerHTML=Object.values(data)
+          document.getElementById('output_info').innerHTML=data
          })
         }, 500); 
       }   
