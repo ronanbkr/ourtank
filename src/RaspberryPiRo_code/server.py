@@ -8,18 +8,15 @@ import io
 from flask_cors import CORS
 from itertools import chain
 import meinheld
+import globals
+import multiprocessing
 
 from video_socket import *
 from getData import *
 
 app = Flask(__name__)
 CORS(app)
-
 ######################## Raw Data #######################
-
-@app.route('/info',methods=['GET'])
-def get_info():
-    return (jsonify(get_info()))
 
 @app.route('/video4',methods=['GET'])
 def video4():
@@ -40,6 +37,12 @@ def video3():
 def get_data():
     data=getData()
     return (jsonify(data))
+
+@app.route('/info', methods=['GET'])
+def info():
+    return 'info'
+
+lock = multiprocessing.Lock()
 
 @app.route('/control',methods=['GET'])
 def control():
@@ -73,8 +76,14 @@ def control():
             command = request.args['command']
             try:
                 if (command == 'Auto'):
+                    toggle_thread = multiprocessing.Process(target=globals.set_auto_mode)
+                    toggle_thread.start()
+                    toggle_thread.join()
                     client_socket.sendall('006'.encode('utf-8'))
                 elif (command == 'Manual'):
+                    toggle_thread = multiprocessing.Process(target=globals.set_manual_mode)
+                    toggle_thread.start()
+                    toggle_thread.join()
                     client_socket.sendall('007'.encode('utf-8'))
                 print (command)
                 return command
@@ -99,12 +108,11 @@ def video_page():
     except Exception as e:
         print(str(e))
     #return render_template('index.html',message=jsonify(data))
-    return render_template('index.html')
+    return render_template('index2.html')
 
 @app.route('/',methods=['GET'])
 def home_page():
     return "RAMP Data Page"
-
 
 if __name__=='__main__':
     app.run(host='0.0.0.0',threaded=True)

@@ -35,14 +35,13 @@ def client3():
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n')
     #client_socket.close()
 
-info ={}
 def client4():
-    global info
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect(('0.0.0.0', 9000))
     payload_size = struct.calcsize("I")
     data=b''
     while True:
+        start = time.time()
         while len(data) < payload_size:
             data += client_socket.recv(4096)
         packed_msg_size = data[:payload_size]
@@ -61,9 +60,8 @@ def client4():
         #frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
         _,frame_bytes= cv2.imencode('.JPEG',frame[0])
         info=frame[1]
+        #print (time.time()-start)
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n')
         #yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n',frame_numpy[1])
     #client_socket.close()
     
-def get_info():
-    return info

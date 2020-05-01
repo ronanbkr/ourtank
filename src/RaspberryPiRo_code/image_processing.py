@@ -14,9 +14,11 @@ import pickle
 import struct
 import base64
 import numpy as np
+import globals
+import multiprocessing
 
 def image_processing():
-
+    
     ### Socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind(('0.0.0.0', 9000))
@@ -44,13 +46,13 @@ def image_processing():
     print("Test: Video Stream starting")
     vs = VideoStream(src=0).start()
     time.sleep(2)
-
+    count2 = 0
     confidence_limit = 0.5
     while True:
         try:
             (clientsocket,address)=server_socket.accept()
             print ('Connected')
-            
+            count = 0
             # loop over the frames from the video stream
             while True:
                 # Take one frame from the video and resize it
@@ -86,11 +88,13 @@ def image_processing():
                         output["end x"] = endX
                         output["end y"] = endY
                         final_confidence = confidence * 100
-                        output["confidence"] = final_confidence
-                        output["detection label"] = CLASSES[idx]
+                        output["confidence"] = "{:.2f}".format(final_confidence)
+                        output["detection label"] = idx
                         trigger = True
-                        output["true/false indicator"] = trigger
-                        
+                        if (trigger):
+                            output["true/false indicator"] = 1
+                        else:
+                            output["true/false indicator"] = 0
                         # depending on the confidence, draw the prediction on the frame
                         if confidence < 0.75:
                             label = "{}: {:.2f}% Investigate".format(CLASSES[idx], final_confidence)
@@ -99,7 +103,7 @@ def image_processing():
                             y = startY - 15 if startY - 15 > 15 else startY + 15
                             cv2.putText(frame, label, (startX, y),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
-                            output["confidence label"] = "Investigate"
+                            output["confidence label"] = 0
                         else:
                             label = "{}: {:.2f}% Confirmed".format(CLASSES[idx], final_confidence)
                             cv2.rectangle(frame, (startX, startY), (endX, endY),
@@ -107,16 +111,21 @@ def image_processing():
                             y = startY - 15 if startY - 15 > 15 else startY + 15
                             cv2.putText(frame, label, (startX, y),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
-                            output["confidence label"] = "Confirmed"
+                            output["confidence label"] = 1
                         
                 # show the output frame
                 #cv2.imshow("FrameServer", frame)
                 #key = cv2.waitKey(1) & 0xFF
                 
                 # For now print output, it will later be sent on to Ronan.
-                #print(output) 
                 
                 
+                #if output != {} and output["true/false indicator"] == 1:
+                    
+                read_thread = multiprocessing.Process(target=read_auto_mode_val, args=[output])
+                read_thread.start()
+                read_thread.join()
+               
                 #print (frame)
                  # Server sending frame in bytes format
                 
@@ -148,6 +157,7 @@ def image_processing():
                 # break once q is pressed
                 #if key == ord("q"):
                 #    break
+                count2+=1
         except Exception as err:
             print (str(err))
     # Socket Connection closed
@@ -159,5 +169,30 @@ def image_processing():
     cv2.destroyAllWindows()
     vs.stop()
 
+def read_auto_mode_val(output):
+    
+    print("global is " + str(globals.auto_mode_value()))
+    if globals.auto_mode_value():
+        print(output)
+        send_dict(output)
+    
+
+def send_dict(info):
+    global count
+
+    try:
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect(('169.254.239.11', 4000))
+        #print(info)
+        s = '020'
+        for v in (info.values()):
+            s+="-"+str(v)
+        client_socket.sendall(s.encode('utf-8'))
+    except Exception as ex:
+        count = 0
+        print (info)
+        print (ex)
+        
 if __name__=='__main__':
+    globals.initialize()
     image_processing()

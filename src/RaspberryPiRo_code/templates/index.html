@@ -288,30 +288,31 @@
         }
     }
     
-    //  window.setInterval(function() {
-    //    $.ajax({
-    //     type: "GET",
-    //     url: "/get_data",
-    //     async : true,
-    //    })
-    //     .done(function( data ) {
-    //       console.log(data);
-    //       document.getElementById('output_data').innerHTML=Object.values(data)
-    //      })
-    //     }, 3000); 
+      window.setInterval(function() {
+        $.ajax({
+         type: "GET",
+         url: "/get_data",
+         async : true,
+        })
+         .done(function( data ) {
+           console.log(data);
+           document.getElementById('output_data').innerHTML=Object.values(data)
+          })
+         }, 3000); 
     
-     //window.setInterval(function() {
-     //  $.ajax({
-     //   type: "GET",
-     //   url: "/get_info",
-     //   async : true,
-     //  })
-     //   .done(function( data ) {
-     //     console.log(info);
-     //     document.getElementById('output_info').innerHTML=Object.values(data)
-     //    })
-     //   }, 500); 
-    
+     window.onload=(event)=>{
+       window.setInterval(function() {
+       $.ajax({
+        type: "GET",
+        url: "/info",
+        async : true,
+       })
+        .done(function( data ) {
+          console.log(info);
+          document.getElementById('output_info').innerHTML=Object.values(data)
+         })
+        }, 500); 
+      }   
     </script>
 
   </head> 
@@ -407,13 +408,13 @@
                   </div>
                   <p id='output'></p>    
                 </div>
-              <!-- <div class="grid-item" style="max-weight:100%">2
+              <div class="grid-item" style="max-weight:100%">2
                 <p style="word-break: break-all;" id='output_data'>    
                 </p>            
-              </div> -->
+              </div> 
       </div>  
       <div class="grid-item">4
-        <p style="word-break: break-all;" id='info_data'></p>
+        <p style="word-break: break-all;" id='output_info'></p>
       </div>
     </div>
   
