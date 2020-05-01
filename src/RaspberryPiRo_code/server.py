@@ -33,15 +33,14 @@ def video3():
     except Exception as ex:
         return str(ex)
 
-@app.route('/get_data',methods=['GET'])
+@app.route('/get_gps',methods=['GET'])
 def get_data():
     data=getData()
     return (jsonify(data))
 
-@app.route('/info', methods=['GET'])
+@app.route('/get_data', methods=['GET'])
 def info():
-    with open('output.pickle', 'rb') as handle:
-        data = pickle.load(handle)
+    data = ""
     return jsonify(str(data))
 
 #lock = multiprocessing.Lock()

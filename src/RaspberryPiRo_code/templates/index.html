@@ -193,6 +193,26 @@
         await send_request(url)
       }
       
+      function getData(url){
+        send_request(url)
+      }
+      
+      function getGPS(){
+        var xhr = new XMLHttpRequest();
+        var url = 'http://192.168.0.34:5000/get_gps'
+        xhr.open('GET', url, true);
+        xhr.onload = function () {
+            if (xhr.readyState === xhr.DONE) {
+                if (xhr.status === 200) {
+                    document.getElementById("gps_data").innerHTML=xhr.responseText
+                    #console.log(xhr.responseText);
+                }
+            }
+        };
+        xhr.send(null);
+      }
+      
+      
       function switch_value(){
         var swit_val =  document.getElementById("switchValue")
         var command = ''
@@ -203,8 +223,7 @@
           document.getElementById('switchVal').innerHTML = "Manual"
           command = "Manual"
         }
-        var url = 'http://192.168.0.34:5000/control?command=' + command
-        send_request(url)
+        send_command(command)
       }
 
       function switch_lazer_value(){
@@ -240,10 +259,6 @@
         send_direction('stop')
      }
      
-      function send_direction(val){
-        var url = 'http://192.168.0.34:5000/control?direction=' + val
-        send_request(url)
-    }
     
     var keyDown = false;
   
@@ -288,30 +303,30 @@
         }
     }
     
-      window.setInterval(function() {
-        $.ajax({
-         type: "GET",
-         url: "/get_data",
-         async : true,
-        })
-         .done(function( data ) {
-           console.log(data);
-           document.getElementById('output_data').innerHTML=Object.values(data)
-          })
-         }, 3000); 
+      //window.setInterval(function() {
+      //  $.ajax({
+      //   type: "GET",
+      //   url: "/get_data",
+      //   async : true,
+      //  })
+      //   .done(function( data ) {
+      //     console.log(data);
+      //     document.getElementById('output_data').innerHTML=Object.values(data)
+      //    })
+      //   }, 3000); 
     
-     window.onload=(event)=>{
-       window.setInterval(function() {
-       $.ajax({
-        type: "GET",
-        url: "/info",
-        async : true,
-       })
-        .done(function( data ) {
-          document.getElementById('output_info').innerHTML=data
-         })
-        }, 500); 
-      }   
+     //window.onload=(event)=>{
+    //   window.setInterval(function() {
+    //   $.ajax({
+    //    type: "GET",
+    //    url: "/info",
+    //    async : true,
+    //   })
+    //    .done(function( data ) {
+    //      document.getElementById('output_info').innerHTML=data
+    //     })
+    //    }, 500); 
+    //  }   
     </script>
 
   </head> 
@@ -408,12 +423,13 @@
                   <p id='output'></p>    
                 </div>
               <div class="grid-item" style="max-weight:100%">2
-                <p style="word-break: break-all;" id='output_data'>    
+                <button onclick="getGPS()" id='gps' class='control' value='GPS' type="button" name="gps">GPS</button>
+                <p style="word-break: break-all;" id='gps_data'>    
                 </p>            
               </div> 
       </div>  
       <div class="grid-item">4
-        <p style="word-break: break-all;" id='output_info'></p>
+        <p style="word-break: break-all;" id='picture_data'></p>
       </div>
     </div>
   
