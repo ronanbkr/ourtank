@@ -15,7 +15,7 @@ int panAngle = 85;  // servo pan position in degrees
 int tiltAngle = 95;  // servo tilt position in degrees
 
 // Laser pin setup
-int laserPin = 10;
+int laserPin = 7;
 
 //["background", "aeroplane", "bicycle", "bird", "boat",
 //        "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
@@ -226,6 +226,7 @@ void loop() {
         if (command == 10) {
             // Pan left from 140 to 35 degrees pan
             if (panAngle > 35) {
+                panAngle--;
                 servo1.write(panAngle);
             }
         }

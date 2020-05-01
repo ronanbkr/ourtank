@@ -6,15 +6,15 @@ def main():
     #altitudeData = getAltitude()
     #print("Altitude Data: ", altitudeData)
     #print("")
-    gyroData = getGyroData()
+    #gyroData = getGyroData()
     #print("Gyro Data", gyroData)
     #print("")
-    #gpsData = getGPSdata()
-    #print("GPS Data: ", gpsData)
+    gpsData = getGPSdata()
+    print("GPS Data: ", gpsData)
     dic ={
-        #"Altitude Data: ": str(altitudeData),
-        "GyroData:": str(gyroData),
-        #"GPSData:":str(gpsData)
+    #"Altitude Data: ": str(altitudeData),
+    #    "GyroData:": str(gyroData),
+        "GPSData:":str(gpsData)
     }
     
     return dic
