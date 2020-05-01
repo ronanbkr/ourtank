@@ -125,11 +125,11 @@ def image_processing():
                 #        pickle.dump(output, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 #print (output)
                     
-                if output != {} and output["true/false indicator"] == 1 and count==20:                    
+                #if output != {} and output["true/false indicator"] == 1 and count==20:                    
                 #    read_thread = multiprocessing.Process(target=read_auto_mode_val, args=[output])
                 #    read_thread.start()
                 #    read_thread.join()
-                    send_dict(output,'020')
+                #    send_dict(output,'020')
                 #print (frame)
                  # Server sending frame in bytes format
                 
