@@ -26,9 +26,9 @@ def sendVideo():
                                 frame =cv2.resize(frame, (300, 225))
                                 #cv2.imshow("FrameServer", frame)
                                 #key = cv2.waitKey(1) & 0xFF
-                                #frame = pickle.dumps(frame)
-                                encoded, frame_byte = cv2.imencode('.JPEG', frame)
-                                frame = base64.b64encode(frame_byte)
+                                frame = pickle.dumps(frame)
+                                #encoded, frame_byte = cv2.imencode('.JPEG', frame)
+                                #frame = base64.b64encode(frame_byte)
                                 size = len(frame)
                                 p = struct.pack('I', size)
                                 frame = p + frame
