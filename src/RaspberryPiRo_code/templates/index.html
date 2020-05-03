@@ -205,7 +205,7 @@
             if (xhr.readyState === xhr.DONE) {
                 if (xhr.status === 200) {
                     document.getElementById("gps_data").innerHTML=xhr.responseText
-                    #console.log(xhr.responseText);
+                    //console.log(xhr.responseText);
                 }
             }
         };
@@ -290,7 +290,7 @@
     document.onkeyup = function(event) {
         event.preventDefault()
         keyDown = false;
-        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", "c", "l", " "].includes(event.key)) {
+        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", "c", "l", "m", " "].includes(event.key)) {
             if (event.key !== 'l') {
               document.getElementById(event.key).classList.remove('controlPressed')
             }

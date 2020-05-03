@@ -71,11 +71,16 @@ def control():
                 client_socket.sendall('011'.encode('utf-8'))
             elif (request.args['direction'] in ["c"]):
                 client_socket.sendall('012'.encode('utf-8'))
+#            elif (request.args['direction'] in [""]):
+#                client_socket.sendall('013'.encode('utf-8'))
+#            elif (request.args['direction'] in ["lazeron"]):
+#                client_socket.sendall('014'.encode('utf-8'))
             return request.args['direction']
             
         elif ('command' in request.args):
             command = request.args['command']
             try:
+                # Tank Manual/Auto
                 if (command == 'Auto'):
                     #toggle_thread = multiprocessing.Process(target=globals2.set_auto_mode)
                     #toggle_thread.start()
@@ -86,6 +91,12 @@ def control():
                     #toggle_thread.start()
                     #toggle_thread.join()
                     client_socket.sendall('007'.encode('utf-8'))
+                    
+#                # Lazer on/off
+                elif (command == 'lazeron'):
+                    client_socket.sendall('013'.encode('utf-8'))
+                elif (command == 'lazeroff'):
+                    client_socket.sendall('014'.encode('utf-8'))
                 print (command)
                 return command
             except Exception as ex:
@@ -109,7 +120,7 @@ def video_page():
     except Exception as e:
         print(str(e))
     #return render_template('index.html',message=jsonify(data))
-    return render_template('index2.html')
+    return render_template('index.html')
 
 @app.route('/',methods=['GET'])
 def home_page():

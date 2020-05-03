@@ -53,6 +53,7 @@ def image_processing():
             (clientsocket,address)=server_socket.accept()
             print ('Connected')
             count = 0
+            send_count = 0
             # loop over the frames from the video stream
             while True:
                 start =time.time()
@@ -124,12 +125,15 @@ def image_processing():
                 #    with open('output.pickle', 'wb') as handle:
                 #        pickle.dump(output, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 #print (output)
-                    
-                #if output != {} and output["true/false indicator"] == 1 and count==20:                    
+                if output != {} and output["true/false indicator"] == 1:# and count==20:                    
                 #    read_thread = multiprocessing.Process(target=read_auto_mode_val, args=[output])
                 #    read_thread.start()
                 #    read_thread.join()
-                #    send_dict(output,'020')
+                    #if send_count == 20:
+                    send_dict(output,'020')
+                    #    send_count = 0
+                    #else:
+                    #    send_count+=1
                 #print (frame)
                  # Server sending frame in bytes format
                 
@@ -188,12 +192,32 @@ def send_dict(info,s):
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect(('169.254.239.11', 4000))
-        #print(info)
+        print(info)
         for v in (info.values()):
-            s+="-"+str(v)
-        client_socket.sendall(s.encode('utf-8'))
+            #print(v)
+            if (len(str(v)) < 3):
+                #print(v)
+                v = str(v)
+                if (len(str(v)) == 2):
+                    v = "0" + v
+                else:
+                    v = "00" + v
+                        
+                s+=v
+            else:    
+                s+=str(v)
+            
+        print(s)
+                
+        if count % 20:
+            client_socket.sendall(s.encode('utf-8'))
+        elif count == 50:
+            client_socket.sendall("000".encode('utf-8'))
+            count = 0
+            
     except Exception as ex:
         count = 0
+        #client_socket.sendall("000".encode('utf-8'))
         print (info)
         print (ex)
         
