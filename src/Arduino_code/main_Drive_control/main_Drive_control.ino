@@ -1,4 +1,5 @@
 #include <Wire.h>
+
 #include <Servo.h>
 
 #define SLAVE_ADDRESS 0x18
@@ -9,13 +10,32 @@ int i = 0;
 // Defines servo pins
 int servoPinPan = 5;
 int servoPinTilt = 6;
+
+// Servo setup for pan and tilt
 Servo servo1;
 Servo servo2;
 int panAngle = 85;  // servo pan position in degrees
 int tiltAngle = 95;  // servo tilt position in degrees
+String cv_data = "";
 
-// Laser pin setup
-int laserPin = 7;
+int x1 = 0;
+int x2 = 0;
+int y1 = 0;
+int y2 = 0;
+int trigger = 0;
+int confirm = 0;
+int item = 0;
+double percent = 0.0;
+int width = 400;
+int height = 300;
+int box_width = 0;
+int box_height = 0;
+int left_width = 0;
+int top_height = 0;
+
+
+// Lazer pin setup
+int lazerPin = 7;
 
 //["background", "aeroplane", "bicycle", "bird", "boat",
 //        "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
@@ -59,24 +79,24 @@ int brake_R;
 int speed_R;
 int runTime;
 
+// Ultrasonic distance tresholds
 float maxDist = 150.00;
 float mi1Dist = 110.00;
 float mi2Dist = 70.00;
 float minDist = 40.00;
 
+// Built in motor movements
 String move_fwd_full = "1-0-255-0-0-255-00";
 String move_fwd_mi1 = "1-0-220-0-0-215-00";
 String move_fwd_mi2 = "1-0-180-0-0-175-00";
 String move_fwd_close = "1-0-120-0-0-120-00";
 
 String reverse = "0-0-120-1-0-120-000";
-
 String all_stop = "1-0-000-0-0-000-00";
 
 String spin_right = "1-0-155-1-0-155-250";
-String spin_left = "0-0-155-0-0-155-250";
-
 String turn_right = "1-0-155-1-0-155-250";
+String spin_left = "0-0-155-0-0-155-250";
 String turn_left = "0-0-155-0-0-155-250";
 
 void setup() {
@@ -99,11 +119,14 @@ void setup() {
     pinMode(camEchoPin, INPUT);   // Sets the echoPin as an Input
 
     // Camera pan and tilt setup
-    pinMode(laserPin, OUTPUT);
     servo1.attach(servoPinPan);
     servo1.write(panAngle);
     servo2.attach(servoPinTilt);
-    servo2.write(tiltAngle);
+    servo2.write(tiltAngle); 
+
+
+    // Lazer output 
+    pinMode(lazerPin, OUTPUT);
 }
 
 void loop() {
@@ -113,79 +136,15 @@ void loop() {
         String phrase;
         phrase = String(phrase + temp);
         command = phrase.substring(0, 3).toInt();
+        cv_data = phrase.substring(3, -1);
         Serial.println(command);
-        Serial.println(phrase);
-        
-        
+        Serial.println(phrase);       
 
-        // Need to add an option for manual or autonomous driving sofar 1 is auto 2,3,4,5 are fwd, rev, L and R
-        if (set_auto == false) {
-            // Manual drive motor activated
-
-            // Send move forward command
-            if (command == 2) {
-                // Drive motor activated forward
-                Serial.println("Drive motor activated forward manual forward");
-                direction_L = 1;
-                brake_L = 0;
-                speed_L = 255;
-                direction_R = 0;
-                brake_R = 0;
-                speed_R = 255;
-                runTime = 0;
-
-                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-            }
-
-            // Send move backward command
-            if (command == 3) {
-                // Drive motor activated reverse
-                Serial.println("Drive motor activated reverse manual reverse");
-                direction_L = 0;
-                brake_L = 0;
-                speed_L = 255;
-                direction_R = 1;
-                brake_R = 0;
-                speed_R = 255;
-                runTime = 0;
-
-                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-            }
-
-            // Send turn left command
-            if (command == 4) {
-                // Drive motor activated left
-                Serial.println("Drive motor activated left manual left");
-                direction_L = 0;
-                brake_L = 0;
-                speed_L = 200;
-                direction_R = 0;
-                brake_R = 0;
-                speed_R = 200;
-                runTime = 0;
-
-                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-            }
-
-            // Send turn right command
-            if (command == 5) {
-                // Drive motor activated right
-                Serial.println("Drive motor activated right manual right");
-                direction_L = 1;
-                brake_L = 0;
-                speed_L = 200;
-                direction_R = 1;
-                brake_R = 0;
-                speed_R = 200;
-                runTime = 0;
-
-                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-            }
-        }
-
+        // Need to add an option for manual or autonomous driving so far 1 is auto 2,3,4,5 are fwd, rev, L and R
         // Control switch to Automatic
         if (command == 6) {
             set_auto = true;
+            receiveFlag = false;
         }
 
         // Control switch to Manual
@@ -202,75 +161,267 @@ void loop() {
             runTime = 1;
 
             motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+            receiveFlag = false;
         }
+        
+        if (set_auto == false) {
+            // Manual drive motor activated
 
-        // Send camera servo down command
-        if (command == 8) {
-            // Tilt down
-            if (tiltAngle < 105) {
-                tiltAngle++;
-                servo2.write(tiltAngle); 
+            // Send move forward command
+            if (command == 2) {
+                // Drive motor activated forward
+                Serial.println("Drive motor activated forward manual forward");
+                direction_L = 1;
+                brake_L = 0;
+                speed_L = 250;
+                direction_R = 0;
+                brake_R = 0;
+                speed_R = 250;
+                runTime = 0;
+
+                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+                receiveFlag = false;
             }
-        }
 
-        // Send camera servo up command
-        if (command == 9) {
-            // Tilt up
-            if (tiltAngle > 0) {
-                tiltAngle--;
+            // Send move backward command
+            if (command == 3) {
+                // Drive motor activated reverse
+                Serial.println("Drive motor activated reverse manual reverse");
+                direction_L = 0;
+                brake_L = 0;
+                speed_L = 250;
+                direction_R = 1;
+                brake_R = 0;
+                speed_R = 250;
+                runTime = 0;
+
+                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+                receiveFlag = false;
+            }
+
+            // Send turn left command
+            if (command == 4) {
+                // Drive motor activated left
+                Serial.println("Drive motor activated left manual left");
+                direction_L = 0;
+                brake_L = 0;
+                speed_L = 150;
+                direction_R = 0;
+                brake_R = 0;
+                speed_R = 150;
+                runTime = 0;
+
+                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+                receiveFlag = false;
+            }
+
+            // Send turn right command
+            if (command == 5) {
+                // Drive motor activated right
+                Serial.println("Drive motor activated right manual right");
+                direction_L = 1;
+                brake_L = 0;
+                speed_L = 150;
+                direction_R = 1;
+                brake_R = 0;
+                speed_R = 150;
+                runTime = 0;
+
+                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+                receiveFlag = false;
+            }
+            
+            // Tilt camera servo down command
+            if (command == 8) {
+                // Tilt down
+                if (tiltAngle < 105) {
+                    tiltAngle++;
+                    servo2.write(tiltAngle); 
+                }
+                receiveFlag = false;
+            }
+    
+            // Tilt camera servo up command
+            if (command == 9) {
+                // Tilt up
+                if (tiltAngle > 0) {
+                    tiltAngle--;
+                    servo2.write(tiltAngle);
+                }
+                receiveFlag = false;
+            }
+    
+            // Pan camera servo left command
+            if (command == 10) {
+                // Pan left from 140 to 35 degrees pan
+                if (panAngle > 35) {
+                    panAngle--;
+                    servo1.write(panAngle);
+                }
+                receiveFlag = false;
+            }
+    
+            // Pan camera servo right command
+            if (command == 11) {
+                // Pan right from 35 to 140 degrees pan
+                if (panAngle < 140) {
+                    panAngle++;
+                    servo1.write(panAngle);
+                } 
+                receiveFlag = false;
+            }
+    
+            // Pan camera servo center command
+            if (command == 12) {
+                // Pan center 85, Tilt center 90
+                panAngle = 85;
+                tiltAngle = 95;
+                servo1.write(panAngle);
                 servo2.write(tiltAngle);
+                receiveFlag = false;  
+            }
+    
+            if (command == 13) {
+                // Activate lazer 
+                digitalWrite(lazerPin, HIGH);
+                receiveFlag = false;
+            }
+    
+            if (command == 14) {
+                // Deactivate lazer
+                digitalWrite(lazerPin, LOW);
+                receiveFlag = false; 
+            }
+            
+            // Control switch to Automatic
+            if (command == 6) {
+                set_auto = true;
+                receiveFlag = false;
             }
         }
 
-        // Send camera servo left command
-        if (command == 10) {
-            // Pan left from 140 to 35 degrees pan
-            if (panAngle > 35) {
-                panAngle--;
-                servo1.write(panAngle);
+        if (set_auto == true) {
+            Serial.println("Automatic mode");  
+            // Control switch to Manual
+            if (command == 7) {
+                set_auto = false;
+                // Drive motor stoped
+                Serial.println("Drive motor stopped");
+                direction_L = 1;
+                brake_L = 1;
+                speed_L = 000;
+                direction_R = 0;
+                brake_R = 1;
+                speed_R = 000;
+                runTime = 1;
+    
+                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+                receiveFlag = false;
             }
+           
+            if (command == 20) {
+                Serial.println("Beginning object investigation...");
+                // Runs the auto investigate 
+                parse_cv_data(cv_data);
+                center_camera();       
+                
+                Serial.println("#####################################################################################");
+                Serial.println("Yes its working!!!");
+                Serial.println("#####################################################################################");
+                receiveFlag = false;
+            } else {
+                maneuver();
+                delayMicroseconds(1000);
+            }
+            receiveFlag = false; 
         }
 
-        // Send camera servo right command
-        if (command == 11) {
-            // Pan right from 35 to 140 degrees pan
-            if (panAngle < 140) {
-                panAngle++;
-                servo1.write(panAngle);
-            } 
+        if (command == 6) {
+            set_auto = true;
+            receiveFlag = false;
         }
 
-        // Send camera servo center command
-        if (command == 12) {
-            // Pan center 85, Tilt center 90
-            panAngle = 85;
-            tiltAngle = 95;
-            servo1.write(panAngle);
-            servo2.write(tiltAngle);  
-        }
+        // Control switch to Manual
+        if (command == 7) {
+            set_auto = false;
+            // Drive motor stoped
+            Serial.println("Drive motor stopped");
+            direction_L = 1;
+            brake_L = 1;
+            speed_L = 000;
+            direction_R = 0;
+            brake_R = 1;
+            speed_R = 000;
+            runTime = 1;
 
-        if (command == 13) {
-            // Activate laser 
-            digitalWrite(laserPin, HIGH);
-        }
-
-        if (command == 14) {
-            // Deactivate laser
-            digitalWrite(laserPin, LOW); 
+            motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+            receiveFlag = false;
         }
         receiveFlag = false;
     }
-
-    if (set_auto == true) {
-        maneuver();
-        Serial.print("Automatic mode ");
-        if (command == 20) {
-          // Runs the auto investigate 
-          Serial.println("Yes its working!!!");
-          Serial.println("#####################################################################################");
-        }
-    }
 }
+
+// Center bounding box in camera view
+void center_camera() {
+    // Pan left from 140 to 35 degrees pan
+    // Pan right from 35 to 140 degrees pan
+    box_width = x2 - x1;
+    box_height = y2 - y1;
+    left_width = (width - box_width)/2;
+    top_height = (height - box_height)/2;
+    if (x1 > (left_width - 5)) {
+        Serial.println();
+        Serial.print("Box width: ");
+        Serial.println(box_width);
+        Serial.print("X1: ");
+        Serial.println(x1);
+        Serial.print("Side width: ");
+        Serial.println(left_width);
+        Serial.print("Width: ");
+        Serial.println(width);
+        Serial.print("Pan Angle");
+        Serial.println(panAngle);
+          
+//        for (x1 = x1; x1 < (left_width - 5); panAngle++) {
+//            if (panAngle < 140) {
+//                // Pan camera center
+//                servo1.write(panAngle); 
+//                delayMicroseconds(1000); 
+//            }
+            
+//        } 
+        Serial.println("Need to pan right");
+    } 
+    else if (x1 < (left_width - 5)) {
+//        for (x1 = x1; x1 > (left_width - 5); panAngle--) {
+//            if (panAngle > 35) {
+//                // Pan camera center
+//                servo1.write(panAngle); 
+//                delayMicroseconds(1000);
+//            }
+//        }
+        Serial.println("Need to pan left");
+    }
+    receiveFlag = false;
+}
+
+void parse_cv_data(String cv_data) {
+    x1 = cv_data.substring(0, 3).toInt();
+    y1 = cv_data.substring(3, 6).toInt();
+    x2 = cv_data.substring(6, 9).toInt();
+    y2 = cv_data.substring(9, 12).toInt();
+//    percent = atof(cv_data.substring(12, 17));
+    item = cv_data.substring(17,20).toInt();
+    trigger = cv_data.substring(20,23).toInt();
+    confirm = cv_data.substring(23, -1).toInt();
+    Serial.println(x1);
+    Serial.println(y1);
+    Serial.println(x2);
+    Serial.println(y2);
+    Serial.println(item);
+    Serial.println(trigger);
+    Serial.println(confirm);
+    }
 
 float get_fwd_distance() {
     // Clears the trigPin
@@ -494,3 +645,7 @@ void maneuver() {
         }
     }
 }
+
+
+    
+    
