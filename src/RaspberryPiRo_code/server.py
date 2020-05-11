@@ -8,11 +8,12 @@ import io
 from flask_cors import CORS
 from itertools import chain
 import meinheld
-import globals2
 import multiprocessing
 
 from video_socket import *
 from getData import *
+
+import pickle
 
 app = Flask(__name__)
 CORS(app)
@@ -43,10 +44,9 @@ def info():
     data = ""
     return jsonify(str(data))
 
-#lock = multiprocessing.Lock()
-
 @app.route('/control',methods=['GET'])
 def control():
+
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect(('169.254.239.11', 4000))
@@ -59,8 +59,6 @@ def control():
                 client_socket.sendall('004'.encode('utf-8'))            
             elif (request.args["direction"] in ["right", "ArrowRight"]):
                 client_socket.sendall('005'.encode('utf-8'))
-            elif (request.args['direction'] in ["007", "stop", ""]):
-                client_socket.sendall('007'.encode('utf-8'))
             elif (request.args['direction'] in ["w"]):
                 client_socket.sendall('008'.encode('utf-8'))
             elif (request.args['direction'] in ["s"]):
@@ -71,33 +69,41 @@ def control():
                 client_socket.sendall('011'.encode('utf-8'))
             elif (request.args['direction'] in ["c"]):
                 client_socket.sendall('012'.encode('utf-8'))
-#            elif (request.args['direction'] in [""]):
-#                client_socket.sendall('013'.encode('utf-8'))
-#            elif (request.args['direction'] in ["lazeron"]):
-#                client_socket.sendall('014'.encode('utf-8'))
             return request.args['direction']
             
         elif ('command' in request.args):
             command = request.args['command']
+
             try:
                 # Tank Manual/Auto
-                if (command == 'Auto'):
-                    #toggle_thread = multiprocessing.Process(target=globals2.set_auto_mode)
-                    #toggle_thread.start()
-                    #toggle_thread.join()
+                if (command == 'auto'):
+                    with open('variable.pickle','wb') as variable:
+                        pickle.dump('True',variable)
                     client_socket.sendall('006'.encode('utf-8'))
-                elif (command == 'Manual'):
-                    #toggle_thread = multiprocessing.Process(target=globals2.set_manual_mode)
-                    #toggle_thread.start()
-                    #toggle_thread.join()
-                    client_socket.sendall('007'.encode('utf-8'))
                     
+                elif (command == 'manual'):
+                    with open('variable.pickle','wb') as variable:
+                        pickle.dump('False',variable)
+                    client_socket.sendall('007'.encode('utf-8'))
+                                                
 #                # Lazer on/off
                 elif (command == 'lazeron'):
                     client_socket.sendall('013'.encode('utf-8'))
                 elif (command == 'lazeroff'):
                     client_socket.sendall('014'.encode('utf-8'))
-                print (command)
+                    
+                  # Night mode on/off  
+                elif (command == 'nighton'):
+                    with open('variable.pickle','wb') as variable:
+                        pickle.dump('True',variable)
+                    client_socket.sendall('021'.encode('utf-8'))
+                    
+                elif (command == 'nightoff'):
+                    with open('variable.pickle','wb') as variable:
+                        pickle.dump('False',variable)
+                    client_socket.sendall('022'.encode('utf-8'))
+                    
+                print(command)
                 return command
             except Exception as ex:
                 print (ex)
@@ -115,7 +121,7 @@ def video_page():
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect(('169.254.239.11', 4000))
-        client_socket.sendall('007'.encode('utf-8'))
+        #client_socket.sendall('007'.encode('utf-8'))
         #data = getData()
     except Exception as e:
         print(str(e))

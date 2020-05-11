@@ -211,17 +211,18 @@
         };
         xhr.send(null);
       }
-      
-      
+
       function switch_value(){
         var swit_val =  document.getElementById("switchValue")
         var command = ''
         if (swit_val.checked == true){
           document.getElementById('switchVal').innerHTML = "Auto"
-          command = "Auto"
+          command = "auto"
+
         }else {        
           document.getElementById('switchVal').innerHTML = "Manual"
-          command = "Manual"
+          command = "manual"
+
         }
         send_command(command)
       }
@@ -233,13 +234,16 @@
           console.log("LAZER ON")
           document.getElementById('lazerVal').innerHTML = "Lazer ON"
           command = "lazeron"
-        } else {        
+        } else {   
+          console.log("LAZER OFF")     
           document.getElementById('lazerVal').innerHTML = "Lazer OFF"
           command = "lazeroff"
         }
         var url = 'http://192.168.0.34:5000/control?command=' + command
         send_request(url)
       }
+      
+      
       
     //  async function send_request(url){
     //     var xhr = new XMLHttpRequest();
@@ -298,7 +302,7 @@
               return
             }
             if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-              send_direction('stop')
+              send_direction('manual')
             }
         }
     }
@@ -429,7 +433,15 @@
               </div> 
       </div>  
       <div class="grid-item">4
-        <p style="word-break: break-all;" id='picture_data'></p>
+      <div class="switchDiv">
+          <label class="switch">
+            <input id="nightValue" type="checkbox" onclick="switchNightValue()">
+            <span class="slider round">
+            </span>
+            
+          </label>
+          <p id='nightVal'>Lazer OFF</p>
+        </div>
       </div>
     </div>
   

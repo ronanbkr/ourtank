@@ -14,9 +14,9 @@ import pickle
 import struct
 import base64
 import numpy as np
-import globals2
-import multiprocessing
-count=0
+
+count = 0
+
 def image_processing():
     
     ### Socket
@@ -46,14 +46,11 @@ def image_processing():
     print("Test: Video Stream starting")
     vs = VideoStream(src=0).start()
     time.sleep(2)
-    count2 = 0
     confidence_limit = 0.5
     while True:
         try:
             (clientsocket,address)=server_socket.accept()
             print ('Connected')
-            count = 0
-            send_count = 0
             # loop over the frames from the video stream
             while True:
                 start =time.time()
@@ -125,16 +122,15 @@ def image_processing():
                 #    with open('output.pickle', 'wb') as handle:
                 #        pickle.dump(output, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 #print (output)
-                if output != {} and output["true/false indicator"] == 1:# and count==20:                    
-                #    read_thread = multiprocessing.Process(target=read_auto_mode_val, args=[output])
-                #    read_thread.start()
-                #    read_thread.join()
-                    #if send_count == 20:
+                #global globals2.auto_mode
+                #global auto_mode
+                #print(auto_mode)
+                with open('variable.pickle','rb') as variable:
+                    auto_mode = pickle.load(variable)
+                if output != {} and output["true/false indicator"] == 1 and auto_mode == "True":                    
                     send_dict(output,'020')
-                    #    send_count = 0
-                    #else:
-                    #    send_count+=1
-                #print (frame)
+                    output = {}
+
                  # Server sending frame in bytes format
                 
                 frame_data = pickle.dumps([frame,output])
@@ -165,7 +161,6 @@ def image_processing():
                 # break once q is pressed
                 #if key == ord("q"):
                 #    break
-                count2+=1
                 print (time.time()-start)
         except Exception as err:
             print (str(err))
@@ -178,49 +173,34 @@ def image_processing():
     cv2.destroyAllWindows()
     vs.stop()
 
-def read_auto_mode_val(output):
-    
-    print("global is " + str(globals2.auto_mode_value()))
-    if globals2.auto_mode_value():
-        print(output)
-        send_dict(output)
-    
-
 def send_dict(info,s):
     global count
-    count+=1
     try:
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.connect(('169.254.239.11', 4000))
-        print(info)
-        for v in (info.values()):
-            #print(v)
-            if (len(str(v)) < 3):
-                #print(v)
-                v = str(v)
-                if (len(str(v)) == 2):
-                    v = "0" + v
-                else:
-                    v = "00" + v
-                        
-                s+=v
-            else:    
-                s+=str(v)
-            
-        print(s)
-                
-        if count % 20:
-            client_socket.sendall(s.encode('utf-8'))
-        elif count == 50:
-            client_socket.sendall("000".encode('utf-8'))
-            count = 0
-            
+        with open('variable.pickle','rb') as variable:
+            auto_mode = pickle.load(variable)
+        print("##########")
+
+        if auto_mode == 'True':
+            count+=1
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect(('169.254.239.11', 4000))
+            for v in (info.values()):
+                if (len(str(v)) < 3):
+                    v = str(v)
+                    if (len(str(v)) == 2):
+                        v = "0" + v
+                    else:
+                        v = "00" + v
+                    s+=v
+                else:    
+                    s+=str(v) 
+            if count == 8:
+                client_socket.sendall(s.encode('utf-8')) 
+                count = 0      
+                print(s, len(s))
+
     except Exception as ex:
-        count = 0
-        #client_socket.sendall("000".encode('utf-8'))
-        print (info)
         print (ex)
-        
+    
 if __name__=='__main__':
-    #globals2.initialize()
     image_processing()
