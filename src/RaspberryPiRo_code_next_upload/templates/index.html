@@ -1,0 +1,438 @@
+<html>
+  <head>
+    <title>Demonstration</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+ /* The switch - the box around the slider */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+        vertical-align: middle;
+      }
+
+      .switchDiv {
+        
+        justify-items: auto;
+        display: inline-block;
+        margin: 20 0 20 0;
+      }
+      
+
+      /* Hide default HTML checkbox */
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      
+      
+
+      /* The slider */
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgb(99, 92, 92);
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+      
+      h3 {
+        margin: 0 0 10px 0;
+      }
+
+      p {
+        font-weight: 700;
+        padding-left: 20px;
+        vertical-align: middle;
+        display: inline-block;
+      }
+
+      input:checked + .slider {
+        background-color: #2196F3;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 1px rgb(87, 94, 100);
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+      }
+
+      /* Rounded sliders */
+      .slider.round {
+        
+        border-radius: 34px;
+      }
+
+      .slider.round:before {
+        border-radius: 50%;
+      }
+      
+      h2 {
+        margin: 0 0 20 0;
+      }
+
+      h4 {
+        font-size: 20px;;
+        margin: 0;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(2,1fr);
+        padding: 10px;
+      }
+      .grid-item {
+        text-align: center;
+        align-content: center;
+        display: block;
+        
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 2px solid rgba(0, 0, 0, 0.8);
+        border-radius: 50px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .tank-controls { 
+        
+      }
+
+      .control-item {
+        display: inline-block;
+        text-align: center;
+        align-content: center;
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 2px solid rgba(0, 0, 0, 0.8);
+        border-radius: 50px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      
+      .controller {
+        width: fit-content;
+      }
+      
+      form {
+        margin: 0;
+        align: center;
+      }
+      
+      img {
+        margin: 0;
+      }
+      
+      .control {
+        width: 50px;
+        height: 50px;
+        border-radius: 50px;
+        margin: 2px;
+        -moz-box-shadow:    1px 1px 2px rgb(0,0,0);
+        -webkit-box-shadow: 1px 1px 2px rgb(0,0,0);
+        box-shadow:         1px 1px 2px rgb(0,0,0);
+        transition: all 0.3s;
+        outline: none;
+      }
+
+      .controlPressed {
+        width: 50px;
+        height: 50px;
+        border-radius: 50px;
+        border: none;
+        margin: 2px;
+        background-color: rgb(255, 94, 0);
+        -moz-box-shadow:    inset 1px 2px 2px rgb(0,0,0);
+        -webkit-box-shadow: inset 1px 2px 2px rgb(0,0,0);
+        box-shadow:         inset 1px 2px 2px rgb(0,0,0);
+        transition: all 0.3s;
+        outline: none;
+      }
+
+      .control:hover {
+          transition: background-color 300ms;
+          background-color: #999999;
+      }
+      
+    </style>
+    <script>  
+      function send_request(url){
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, false);
+        xhr.send();
+      }
+      
+      async function send_command(command){
+        var url = 'http://192.168.0.34:5000/control?command=' + command
+        await send_request(url)
+      }
+            
+      async function send_direction(direction){
+        var url = 'http://192.168.0.34:5000/control?direction=' + direction
+        await send_request(url)
+      }
+      
+      function getData(url){
+        send_request(url)
+      }
+      
+      function getGPS(){
+        var xhr = new XMLHttpRequest();
+        var url = 'http://192.168.0.34:5000/get_gps'
+        xhr.open('GET', url, true);
+        xhr.onload = function () {
+            if (xhr.readyState === xhr.DONE) {
+                if (xhr.status === 200) {
+                    document.getElementById("gps_data").innerHTML=xhr.responseText
+                    //console.log(xhr.responseText);
+                }
+            }
+        };
+        xhr.send(null);
+      }
+      
+      
+      function switch_value(){
+        var swit_val =  document.getElementById("switchValue")
+        var command = ''
+        if (swit_val.checked == true){
+          document.getElementById('switchVal').innerHTML = "Auto"
+          command = "Auto"
+        }else {        
+          document.getElementById('switchVal').innerHTML = "Manual"
+          command = "Manual"
+        }
+        send_command(command)
+      }
+
+      function switch_lazer_value(){
+        var swit_val =  document.getElementById("lazerValue")
+        var command = ''
+        if (swit_val.checked == true){
+          console.log("LAZER ON")
+          document.getElementById('lazerVal').innerHTML = "Lazer ON"
+          command = "lazeron"
+        } else {        
+          document.getElementById('lazerVal').innerHTML = "Lazer OFF"
+          command = "lazeroff"
+        }
+        var url = 'http://192.168.0.34:5000/control?command=' + command
+        send_request(url)
+      }
+      
+    //  async function send_request(url){
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.open("GET", url, false);
+    //     xhr.send(null);         
+    // }
+      
+     function choose(id, val){
+        document.getElementById(id).classList.remove("control")
+        document.getElementById(id).classList.add("controlPressed")
+        send_direction(val)
+      }
+     
+     function stop(id){
+        document.getElementById(id).classList.remove("controlPressed")
+        document.getElementById(id).classList.add("control")
+        send_direction('stop')
+     }
+     
+    
+    var keyDown = false;
+  
+
+    document.onkeydown = function(event) {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", "c", "l", " ", "m"].includes(event.key)){
+          event.preventDefault()
+          event.stopPropagation();
+          direction = event.key
+          if (!keyDown) {
+              keyDown = true;
+              if (event.key === 'l') {
+                // on key 'l' pressed toggle the Lazer ON/OFF switch
+                document.getElementById('lazerValue').checked = !document.getElementById('lazerValue').checked
+                switch_lazer_value()
+              } else if (event.key === 'm') {
+                // on key 'm' pressed toggle the Auto/Manual switch
+                document.getElementById('switchValue').checked = !document.getElementById('switchValue').checked
+                switch_value()
+              } else {
+                // If event key is any other than 'l' or 'm' set class to the button that changes button color to red
+                document.getElementById(event.key).classList.add('controlPressed')
+              }
+              send_direction(direction)
+          }
+      }
+    }
+    
+    document.onkeyup = function(event) {
+        event.preventDefault()
+        keyDown = false;
+        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", "c", "l", "m", " "].includes(event.key)) {
+            if (event.key !== 'l') {
+              document.getElementById(event.key).classList.remove('controlPressed')
+            }
+            if (event.key === " ") {
+              return
+            }
+            if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+              send_direction('stop')
+            }
+        }
+    }
+    
+      //window.setInterval(function() {
+      //  $.ajax({
+      //   type: "GET",
+      //   url: "/get_data",
+      //   async : true,
+      //  })
+      //   .done(function( data ) {
+      //     console.log(data);
+      //     document.getElementById('output_data').innerHTML=Object.values(data)
+      //    })
+      //   }, 3000); 
+    
+     //window.onload=(event)=>{
+    //   window.setInterval(function() {
+    //   $.ajax({
+    //    type: "GET",
+    //    url: "/info",
+    //    async : true,
+    //   })
+    //    .done(function( data ) {
+    //      document.getElementById('output_info').innerHTML=data
+    //     })
+    //    }, 500); 
+    //  }   
+    </script>
+
+  </head> 
+  <body>
+    <h1>Demonstration</h1>
+    
+    <div class="grid-container">
+      <div class="grid-item">Day/Night Camera View
+        <img id ="video3" src="{{ url_for('video3') }}" width="100%">
+      </div>
+      <div class="grid-item">Processed NN View
+        <img id ="video4" src="{{ url_for('video4') }}" width="100%">
+      </div>
+      <div class="grid-item">
+        <h2>Tank controls</h2>
+          <div class="tank-controls">
+            <div class="control-item" style="width: fit-content; background-color: rgb(176, 230, 255)" id="keycontrol">
+              <h3>Movement controls</h3>
+              <hr>
+                <!-- Rounded switch -->
+                <div class="switchDiv">
+                  
+                  <label class="switch">
+                    <input id="switchValue" type="checkbox" onclick="switch_value()">
+                    <span class="slider round">
+                    </span>
+                  </label>
+                  <p id='switchVal'>Manual</p>
+                </div>
+                
+                <br/>
+                <div align="center" class="controller">
+                  <form>
+                    <button id='ArrowUp' class="control"  
+                  value='up' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
+                    <img src="/static/arrow_upward.svg">
+                  </button>
+                  <br/>
+                    <button id='ArrowLeft' class='control' value='left' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
+                      <img src="/static/arrow_back.svg">
+                    </button>
+                    <button id=' ' class='control' value='stop' type = "button" name='Stop' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
+                      <img src="/static/stop.svg">
+                    </button>
+                    <button id='ArrowRight' class='control' value='right' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
+                      <img src="/static/arrow_forward.svg">
+                    </button>
+                    <br/>
+                    <button id='ArrowDown' class='control' value='down' type = "button" name='Reverse' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
+                      <img src="/static/arrow_downward.svg">
+                    </button>
+                  </form>
+                </div>
+                <p id='output'></p>    
+              </div>
+              <div class="control-item" style="width: fit-content; background-color: rgb(255, 176, 213)" id="keycontrol">
+                <h3>Camera controls</h3>
+                <hr>
+                  <!-- Rounded switch -->
+                  <div class="switchDiv">
+                    
+                    <label class="switch">
+                      <input id="lazerValue" type="checkbox" onclick="switch_lazer_value()">
+                      <span class="slider round">
+                      </span>
+                      
+                    </label>
+                    <p id='lazerVal'>Lazer OFF</p>
+                  </div>
+                  
+                  <br/>
+                  <div align="center" class="controller">
+                    <form>
+                      <button id='w' class="control" 
+                    value='w' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                      <h4>W</h4>
+                    </button>
+                    <br/>
+                      <button id='a' class='control' value='a' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                        <h4>A</h4>
+                      </button>
+                      <button id='c' class='control' value='c' type = "button" name='Stop' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                        <h4>C</h4>
+                      </button>
+                      <button id='d' class='control' value='d' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                        <h4>D</h4>
+                      </button>
+                      <br/>
+                      <button id='s' class='control' value='s' type = "button" name='Reverse' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                        <h4>S</h4>
+                      </button>
+                    </form>
+                  </div>
+                  <p id='output'></p>    
+                </div>
+              <div class="grid-item" style="max-weight:100%">2
+                <button onclick="getGPS()" id='gps' class='control' value='GPS' type="button" name="gps">GPS</button>
+                <p style="word-break: break-all;" id='gps_data'>    
+                </p>            
+              </div> 
+      </div>  
+      <div class="grid-item">4
+        <p style="word-break: break-all;" id='picture_data'></p>
+      </div>
+    </div>
+  
+  </body>
+      
+</html>

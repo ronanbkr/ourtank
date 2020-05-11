@@ -2,27 +2,19 @@
 
 import smbus
 import time
+from globals2 import auto_mode
 
 bus = smbus.SMBus(1)
-
-previous_command = "000"
+ 
+send_count = 0
+max_send = 10
 
 # This is the I2C address setup in the Arduino Program
 address = 0x18
 
 def writeData(value):
-    global previous_command
     byteValue = StringToBytes(value) 
-    new_command = value[0:3]
     bus.write_i2c_block_data(address,0x00,byteValue) # First byte is 0 = command byte
-    #if new_command != previous_command:
-        # look at last command if the same delay and send
-        # if different send   
-    #    bus.write_i2c_block_data(address,0x00,byteValue) # First byte is 0 = command byte
-    #    previous_command = new_command
-    #else:
-    #    time.sleep(1)
-    #    previous_command = "000"
     time.sleep(.1)
     return -1
 
@@ -33,30 +25,36 @@ def StringToBytes(val):
         retVal.append(ord(c))
     return retVal
 
-
-auto_mode = ''
 def send_command(command):
-    global auto_mode
-    if command[:3]=='007':
-        auto_mode = False 
-    elif command[:3] =='006':
-        auto_mode = True 
-    if command[:3]=='020' and auto_mode==True:
-        startTime = time.time()
-        #time.sleep(.1)
-        print("Sendind Command", command)
+    print("byteData command: ", command)
+    
+    if command[0:3] == '007':
+        print("STOP")
+        writeData(command)
+
+    if command[0:3] == '006':
+        print("AUTO")
+        writeData(command)
+        
+    
+    if command[0:3] == '020':
+        global send_count
+        send_count+=1
+                    
+        if send_count == max_send: 
+            print("Sending investigate Command", command)
+            writeData(command)
+            time.sleep(.1)
+            send_count = 0
+        
+        if send_count > max_send:
+            send_count = 0
+        
+    elif command[0:3] in ['002', '003', '004', '005', '008', '009', '010', '011', '012', '013', '014', '015', '016', '017', '018', '019']:
+        print("Sending alternate Command", command)
         
         writeData(command)
         time.sleep(.1)
-    elif command[:3] != '020':
-        startTime = time.time()
-        #time.sleep(.1)
-        print("Sending Command", command)
-        
-        writeData(command)
-        time.sleep(.1)
-        
-    print("Auto mode is ",auto_mode)
 
 if __name__ == '__main__':
     main()
