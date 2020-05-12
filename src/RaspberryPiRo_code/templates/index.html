@@ -121,9 +121,10 @@
       }
 
       .control-item {
+        width: 500px; 
         display: inline-block;
-        text-align: center;
-        align-content: center;
+        /* text-align: center; */
+        /* align-content: center; */
         background-color: rgba(255, 255, 255, 0.8);
         border: 2px solid rgba(0, 0, 0, 0.8);
         border-radius: 50px;
@@ -132,12 +133,12 @@
       }
       
       .controller {
-        width: fit-content;
+        /* width: fit-content; */
       }
       
       form {
-        margin: 0;
-        align: center;
+        /* margin: 0;
+        align: center; */
       }
       
       img {
@@ -347,7 +348,7 @@
       <div class="grid-item">
         <h2>Tank controls</h2>
           <div class="tank-controls">
-            <div class="control-item" style="width: fit-content; background-color: rgb(176, 230, 255)" id="keycontrol">
+            <div class="control-item" style="background-color: rgb(176, 230, 255)" id="keycontrol">
               <h3>Movement controls</h3>
               <hr>
                 <!-- Rounded switch -->
@@ -386,46 +387,6 @@
                 </div>
                 <p id='output'></p>    
               </div>
-              <div class="control-item" style="width: fit-content; background-color: rgb(255, 176, 213)" id="keycontrol">
-                <h3>Camera controls</h3>
-                <hr>
-                  <!-- Rounded switch -->
-                  <div class="switchDiv">
-                    
-                    <label class="switch">
-                      <input id="lazerValue" type="checkbox" onclick="switch_lazer_value()">
-                      <span class="slider round">
-                      </span>
-                      
-                    </label>
-                    <p id='lazerVal'>Lazer OFF</p>
-                  </div>
-                  
-                  <br/>
-                  <div align="center" class="controller">
-                    <form>
-                      <button id='w' class="control" 
-                    value='w' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
-                      <h4>W</h4>
-                    </button>
-                    <br/>
-                      <button id='a' class='control' value='a' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
-                        <h4>A</h4>
-                      </button>
-                      <button id='c' class='control' value='c' type = "button" name='Stop' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
-                        <h4>C</h4>
-                      </button>
-                      <button id='d' class='control' value='d' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
-                        <h4>D</h4>
-                      </button>
-                      <br/>
-                      <button id='s' class='control' value='s' type = "button" name='Reverse' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
-                        <h4>S</h4>
-                      </button>
-                    </form>
-                  </div>
-                  <p id='output'></p>    
-                </div>
               <div class="grid-item" style="max-weight:100%">2
                 <button onclick="getGPS()" id='gps' class='control' value='GPS' type="button" name="gps">GPS</button>
                 <p style="word-break: break-all;" id='gps_data'>    
@@ -433,6 +394,7 @@
               </div> 
       </div>  
       <div class="grid-item">4
+        
       <div class="switchDiv">
           <label class="switch">
             <input id="nightValue" type="checkbox" onclick="switchNightValue()">
@@ -442,8 +404,54 @@
           </label>
           <p id='nightVal'>Lazer OFF</p>
         </div>
+        
       </div>
     </div>
+    <div class="grid-item">
+      <h2>Tank controls</h2>
+        <div class="tank-controls">
+          <div class="control-item" style="background-color: rgb(255, 176, 213)" id="keycontrol">
+            <h3>Camera controls</h3>
+            <hr>
+              <!-- Rounded switch -->
+              <div class="switchDiv">
+                
+                <label class="switch">
+                  <input id="lazerValue" type="checkbox" onclick="switch_lazer_value()">
+                  <span class="slider round">
+                  </span>
+                  
+                </label>
+                <p id='lazerVal'>Lazer OFF</p>
+              </div>
+              
+              <br/>
+              <div align="center" class="controller">
+                <form>
+                  <button id='w' class="control" 
+                value='w' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                  <h4>W</h4>
+                </button>
+                <br/>
+                  <button id='a' class='control' value='a' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                    <h4>A</h4>
+                  </button>
+                  <button id='c' class='control' value='c' type = "button" name='Stop' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                    <h4>C</h4>
+                  </button>
+                  <button id='d' class='control' value='d' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                    <h4>D</h4>
+                  </button>
+                  <br/>
+                  <button id='s' class='control' value='s' type = "button" name='Reverse' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                    <h4>S</h4>
+                  </button>
+                </form>
+              </div>
+              <p id='output'></p>    
+          </div>
+        </div>
+      </div>
   
   </body>
       
