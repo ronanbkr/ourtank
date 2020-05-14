@@ -10,11 +10,13 @@ def sendCommand():
         (clientsocket,address)=server_socket.accept()
         #print ('Connected')
         command = clientsocket.recv(2048).decode('utf-8')
-        print (command)
-        try:
-            send_command(command)
-        except Exception as ex:
-            print (ex)
+        if command != "":
+            #print (command)
+            try:
+                send_command(command)
+                #command = ""
+            except Exception as ex:
+                print (ex)
        
                 
     

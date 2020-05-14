@@ -4,7 +4,6 @@
 
 #define SLAVE_ADDRESS 0x18
 
-bool set_auto = false;
 int i = 0;
 
 // Defines servo pins
@@ -26,16 +25,37 @@ int trigger = 0;
 int confirm = 0;
 int item = 0;
 double percent = 0.0;
+int cx = 200;
+int cy = 150;
 int width = 400;
+int mid_width = 200;
 int height = 300;
+int mid_height = 150;
 int box_width = 0;
 int box_height = 0;
 int left_width = 0;
+//int top_height = 0;
+volatile boolean initial_start_up = true;
+volatile boolean set_auto = false;
+volatile boolean pan_left = false;
+volatile boolean pan_right = false;
+volatile boolean tilt_up = false;
+volatile boolean tilt_down = false;
+volatile boolean investigate = false;
+volatile boolean pan_cent = true;
+volatile boolean tilt_cent = true;
 int top_height = 0;
 
+//int pan_left = 0;
+//int pan_right = 0;
+//int tilt_up = 0;
+//int tilt_down = 0;
+//int investigate = 0;
+//int centered = 1;
 
-// Lazer pin setup
-int lazerPin = 7;
+
+// laser pin setup
+int laserPin = 7;
 
 //["background", "aeroplane", "bicycle", "bird", "boat",
 //        "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
@@ -54,7 +74,7 @@ const int aftEchoPin = 35;
 const int camTrigPin = 36;
 const int camEchoPin = 37;
 
-// defines variables
+// defines distance time variables
 long fDuration;
 long lFDuration;
 long rFDuration;
@@ -125,287 +145,515 @@ void setup() {
     servo2.write(tiltAngle); 
 
 
-    // Lazer output 
-    pinMode(lazerPin, OUTPUT);
+    // laser output 
+    pinMode(laserPin, OUTPUT);
+
+    initial_start_up = true;
+    set_auto = false;
+    pan_left = false;
+    pan_right = false;
+    tilt_up = false;
+    tilt_down = false;
+    investigate = false;
+    pan_cent = true;
+    tilt_cent = true;
 }
 
 void loop() {
-
     if (receiveFlag == true) {
-        Serial.println(temp);
+        float forD = get_fwd_distance();
+        float forL = get_left_fwd_distance();
+        float forR = get_right_fwd_distance();
+        float aftD = get_cam_distance();
+        float camD = get_cam_distance();
+        Serial.println("Second test");
+        Serial.println(forD);
+        Serial.println(forL);
+        Serial.println(forR);
+        Serial.println(aftD);
+        Serial.println(camD);
         String phrase;
         phrase = String(phrase + temp);
         command = phrase.substring(0, 3).toInt();
         cv_data = phrase.substring(3, -1);
+        Serial.print("In Command is ");
         Serial.println(command);
-        Serial.println(phrase);       
-
-        // Need to add an option for manual or autonomous driving so far 1 is auto 2,3,4,5 are fwd, rev, L and R
-        // Control switch to Automatic
-        if (command == 6) {
-            set_auto = true;
-            receiveFlag = false;
-        }
-
-        // Control switch to Manual
-        if (command == 7) {
-            set_auto = false;
+        
+        if (initial_start_up == true) {
+            Serial.println("System Initializing..");
+//            set_auto = false;
             // Drive motor stoped
             Serial.println("Drive motor stopped");
-            direction_L = 1;
-            brake_L = 1;
-            speed_L = 000;
-            direction_R = 0;
-            brake_R = 1;
-            speed_R = 000;
-            runTime = 1;
-
-            motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-            receiveFlag = false;
+//            set_to_manual();
+           
+            investigate = false;
+            pan_cent = true;
+            tilt_cent = true;
+            initial_start_up = false;
         }
+       
+//        if (command == 7) {
+//            set_to_manual();     
+
+//            Serial.print("Investigate = ");
+//            Serial.println(investigate);
+//            Serial.print("Set_auto = ");
+//            Serial.println(set_auto);
+//            Serial.print("Command = ");
+//            Serial.println(command);
         
-        if (set_auto == false) {
+//        }
+
+       
+        if (set_auto == false) {         
+            Serial.print("Set_auto = ");
+            Serial.println(set_auto);
             // Manual drive motor activated
-
-            // Send move forward command
+            if (command == 7) {
+               set_to_manual();            
+            }  
+                
+            if (command == 6) {
+                set_to_auto();
+            }
+    
             if (command == 2) {
-                // Drive motor activated forward
-                Serial.println("Drive motor activated forward manual forward");
-                direction_L = 1;
-                brake_L = 0;
-                speed_L = 250;
-                direction_R = 0;
-                brake_R = 0;
-                speed_R = 250;
-                runTime = 0;
-
-                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                receiveFlag = false;
-            }
-
-            // Send move backward command
-            if (command == 3) {
-                // Drive motor activated reverse
-                Serial.println("Drive motor activated reverse manual reverse");
-                direction_L = 0;
-                brake_L = 0;
-                speed_L = 250;
-                direction_R = 1;
-                brake_R = 0;
-                speed_R = 250;
-                runTime = 0;
-
-                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                receiveFlag = false;
-            }
-
-            // Send turn left command
-            if (command == 4) {
-                // Drive motor activated left
-                Serial.println("Drive motor activated left manual left");
-                direction_L = 0;
-                brake_L = 0;
-                speed_L = 150;
-                direction_R = 0;
-                brake_R = 0;
-                speed_R = 150;
-                runTime = 0;
-
-                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                receiveFlag = false;
-            }
-
-            // Send turn right command
-            if (command == 5) {
-                // Drive motor activated right
-                Serial.println("Drive motor activated right manual right");
-                direction_L = 1;
-                brake_L = 0;
-                speed_L = 150;
-                direction_R = 1;
-                brake_R = 0;
-                speed_R = 150;
-                runTime = 0;
-
-                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                receiveFlag = false;
-            }
+                manual_drive_forward(); 
+            } 
             
-            // Tilt camera servo down command
+            if (command == 3) {
+                manual_drive_reverse();
+            }
+
+            if (command == 4) {
+                manual_drive_left();            
+            }
+    
+            if (command == 5) {
+                manual_drive_right();        
+            }
+    
             if (command == 8) {
-                // Tilt down
-                if (tiltAngle < 105) {
-                    tiltAngle++;
-                    servo2.write(tiltAngle); 
-                }
-                receiveFlag = false;
+                manual_tilt_down();            
             }
-    
-            // Tilt camera servo up command
+        
             if (command == 9) {
-                // Tilt up
-                if (tiltAngle > 0) {
-                    tiltAngle--;
-                    servo2.write(tiltAngle);
-                }
-                receiveFlag = false;
+                manual_tilt_up();
             }
-    
-            // Pan camera servo left command
+
+
             if (command == 10) {
-                // Pan left from 140 to 35 degrees pan
-                if (panAngle > 35) {
-                    panAngle--;
-                    servo1.write(panAngle);
-                }
-                receiveFlag = false;
+                manual_pan_left();
             }
     
-            // Pan camera servo right command
             if (command == 11) {
-                // Pan right from 35 to 140 degrees pan
-                if (panAngle < 140) {
-                    panAngle++;
-                    servo1.write(panAngle);
-                } 
-                receiveFlag = false;
+                manual_pan_right();
             }
-    
+  
             // Pan camera servo center command
             if (command == 12) {
-                // Pan center 85, Tilt center 90
-                panAngle = 85;
-                tiltAngle = 95;
-                servo1.write(panAngle);
-                servo2.write(tiltAngle);
-                receiveFlag = false;  
+                manual_pan_to_center();
             }
     
             if (command == 13) {
-                // Activate lazer 
-                digitalWrite(lazerPin, HIGH);
-                receiveFlag = false;
+                // Activate laser 
+                laser_on();
             }
     
             if (command == 14) {
-                // Deactivate lazer
-                digitalWrite(lazerPin, LOW);
-                receiveFlag = false; 
+                // Deactivate laser
+                laser_off();               
             }
-            
-            // Control switch to Automatic
-            if (command == 6) {
-                set_auto = true;
-                receiveFlag = false;
-            }
+  
+            Serial.println("End of False loop");
         }
-
-        if (set_auto == true) {
-            Serial.println("Automatic mode");  
-            // Control switch to Manual
-            if (command == 7) {
-                set_auto = false;
-                // Drive motor stoped
-                Serial.println("Drive motor stopped");
-                direction_L = 1;
-                brake_L = 1;
-                speed_L = 000;
-                direction_R = 0;
-                brake_R = 1;
-                speed_R = 000;
-                runTime = 1;
+//        receiveFlag = false;
     
-                motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-                receiveFlag = false;
-            }
-           
-            if (command == 20) {
-                Serial.println("Beginning object investigation...");
-                // Runs the auto investigate 
-                parse_cv_data(cv_data);
-                center_camera();       
-                
-                Serial.println("#####################################################################################");
-                Serial.println("Yes its working!!!");
-                Serial.println("#####################################################################################");
-                receiveFlag = false;
-            } else {
-                maneuver();
-                delayMicroseconds(1000);
-            }
-            receiveFlag = false; 
-        }
-
-        if (command == 6) {
-            set_auto = true;
-            receiveFlag = false;
-        }
-
-        // Control switch to Manual
+    Serial.println(command);
+//    if (command == 7) {
+//            set_to_manual();                 
+//    }
+                   
+    if (set_auto == true) { 
+        Serial.print("Auto mode = ");
+        Serial.println(set_auto);                      
         if (command == 7) {
-            set_auto = false;
-            // Drive motor stoped
-            Serial.println("Drive motor stopped");
-            direction_L = 1;
-            brake_L = 1;
-            speed_L = 000;
-            direction_R = 0;
-            brake_R = 1;
-            speed_R = 000;
-            runTime = 1;
-
-            motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
-            receiveFlag = false;
+            set_to_manual();                 
         }
+
+        if (command == 20) {
+            set_investigate_on();
+        }
+    
+
+        if (investigate == true) { 
+            parse_cv_data(cv_data);     
+            Serial.print("Investigate = ");
+            Serial.println(investigate);
+            // Runs the auto investigate. Center bounding box in camera view
+            // Pan left from 140 to 35 degrees pan > 35 -- Pan right from 35 to 140 degrees pan < 140 ++
+               
+            Serial.println("Beginning object investigation...");                       
+            // Now we have bounding box x and y positions mid_width and mid_height will either be bigger 
+            // or smaller meaning left or right of center of the bounding box. Now cx and cy are centers of the box
+            check_center();                      
+//                Now center camera if necessary                                                                
+            if (pan_cent == false) {
+                pan_center();   
+            } else if (tilt_cent == false) {
+                tilt_center();
+            } else {
+                investigate_maneuver();
+            }        
+             
+//            if (command == 7) {
+//                set_to_manual();
+//            }
+        } 
+        
+        if (investigate == false) {
+            Serial.print("Investigate = ");
+            Serial.println(investigate);
+            search_maneuver(); 
+            receiveFlag = false;
+            return;
+            
+//            if (command == 7) {
+//               set_to_manual();            
+//            }             
+        }
+        
         receiveFlag = false;
-    }
+        return;
+        }
+    }  
+    
 }
 
-// Center bounding box in camera view
-void center_camera() {
+void manual_drive_forward() {   
+    // Drive motor activated forward
+    Serial.println("Manual forward");
+    direction_L = 1;
+    brake_L = 0;
+    speed_L = 250;
+    direction_R = 0;
+    brake_R = 0;
+    speed_R = 250;
+    runTime = 0;
+
+    motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+    receiveFlag = false;
+}
+
+void manual_drive_reverse() {
+    // Drive motor activated reverse
+    Serial.println("Manual reverse");
+    direction_L = 0;
+    brake_L = 0;
+    speed_L = 250;
+    direction_R = 1;
+    brake_R = 0;
+    speed_R = 250;
+    runTime = 0;
+    motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+    receiveFlag = false;
+}
+
+void manual_drive_left() {             
+    // Drive motor activated left
+    Serial.println("Manual left");
+    direction_L = 0;
+    brake_L = 0;
+    speed_L = 200;
+    direction_R = 0;
+    brake_R = 0;
+    speed_R = 200;
+    runTime = 0;
+    
+    motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+    receiveFlag = false;
+}
+
+void manual_drive_right() {
+    // Drive motor activated right
+    Serial.println("Manual right");
+    direction_L = 1;
+    brake_L = 0;
+    speed_L = 200;
+    direction_R = 1;
+    brake_R = 0;
+    speed_R = 200;
+    runTime = 0;
+  
+    motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+  //                command = 0;
+    receiveFlag = false;
+}
+
+void manual_tilt_down() {
+    // Tilt down
+    Serial.println("Manual tilt down");
+    if (tiltAngle < 105) {
+        tiltAngle+=4;
+        servo2.write(tiltAngle); 
+    }                 
+    receiveFlag = false;
+}
+
+void manual_tilt_up() {
+    // Tilt up
+    Serial.println("Manual tilt up");
+    if (tiltAngle > 0) {
+        tiltAngle-=4;
+        servo2.write(tiltAngle);
+    }
+    receiveFlag = false; 
+}
+
+void manual_pan_left() {
+    // Pan camera servo left command
     // Pan left from 140 to 35 degrees pan
-    // Pan right from 35 to 140 degrees pan
-    box_width = x2 - x1;
-    box_height = y2 - y1;
-    left_width = (width - box_width)/2;
-    top_height = (height - box_height)/2;
-    if (x1 > (left_width - 5)) {
-        Serial.println();
-        Serial.print("Box width: ");
-        Serial.println(box_width);
-        Serial.print("X1: ");
-        Serial.println(x1);
-        Serial.print("Side width: ");
-        Serial.println(left_width);
-        Serial.print("Width: ");
-        Serial.println(width);
-        Serial.print("Pan Angle");
-        Serial.println(panAngle);
-          
-//        for (x1 = x1; x1 < (left_width - 5); panAngle++) {
-//            if (panAngle < 140) {
-//                // Pan camera center
-//                servo1.write(panAngle); 
-//                delayMicroseconds(1000); 
-//            }
-            
-//        } 
-        Serial.println("Need to pan right");
-    } 
-    else if (x1 < (left_width - 5)) {
-//        for (x1 = x1; x1 > (left_width - 5); panAngle--) {
-//            if (panAngle > 35) {
-//                // Pan camera center
-//                servo1.write(panAngle); 
-//                delayMicroseconds(1000);
-//            }
-//        }
-        Serial.println("Need to pan left");
+    Serial.println("Manual pan left");
+    if (panAngle > 35) {
+         panAngle-=4;
+
+         servo1.write(panAngle);
     }
     receiveFlag = false;
 }
 
-void parse_cv_data(String cv_data) {
+void manual_pan_right() {
+    // Pan camera servo right command
+    // Pan right from 35 to 140 degrees pan
+    Serial.println("Manual pan right");
+    if (panAngle < 140) {
+        panAngle+=4;
+//        panAngle++;
+        servo1.write(panAngle);
+    }
+    receiveFlag = false;
+}
+
+void manual_pan_to_center() {
+    // Pan center 85, Tilt center 90
+    Serial.println("Manual Center cameras");
+    panAngle = 85;
+    tiltAngle = 95;
+    servo1.write(panAngle);
+    servo2.write(tiltAngle);
+    receiveFlag = false;                            
+}
+
+void laser_on () {
+    // Activate laser
+    Serial.println("Manual laser on"); 
+    digitalWrite(laserPin, HIGH);
+    receiveFlag = false;
+}
+
+void laser_off () {
+    // Deactivate laser
+    Serial.println("Manual laser off");
+    digitalWrite(laserPin, LOW);
+    receiveFlag = false;                
+}
+
+void set_to_auto() {
+    Serial.println("Auto mode activated");
+    set_auto = true;
+    pan_cent = true;
+    tilt_cent = true;                    
+    investigate = false;
+    cx = 200;
+    cy = 150;
+    receiveFlag = false;
+}
+
+void set_to_manual() {
+    Serial.println("Manual mode activated");
+    set_auto = false;
+    pan_cent = true;
+    tilt_cent = true;
+    investigate = false;
+    // Drive motor stoped
+    direction_L = 1;
+    brake_L = 1;
+    speed_L = 000;
+    
+    direction_R = 0;
+    brake_R = 1;
+    speed_R = 000;
+    runTime = 1;
+
+    motorControl(direction_L, brake_L, speed_L, direction_R, brake_R, speed_R, runTime);
+    
+    pan_cent = true;
+    tilt_cent = true;                    
+    investigate = false;
+    cx = 200;
+    cy = 150;
+
+    receiveFlag = false;
+}
+
+void set_investigate_on() {
+    Serial.println("Investigate mode activated");
+    investigate = true;
+     receiveFlag = false;      
+}
+
+void set_investigate_off() {
+    Serial.println("Investigate mode deactivated");
+    pan_cent = true;
+    tilt_cent = true;
+    investigate = false;
+    cx = 200;
+    cy = 150;
+//    command = "";
+    receiveFlag = false;
+//    Serial.print("Pan_cent = ");
+//    Serial.println(pan_cent);
+//    Serial.print("Tilt_cent = ");
+//    Serial.println(tilt_cent);                    
+//    Serial.print("investigate = ");
+//    Serial.println(investigate);
+//    Serial.print("Center x = ");
+//    Serial.println(cx);
+//    Serial.print("Center y = ");
+//    Serial.println(cy);
+}
+
+void search_maneuver() {
+    maneuver();
+//    delayMicroseconds(1000);
+    pan_cent = true;
+    tilt_cent = true;                    
+    investigate = false;
+    cx = 200;
+    cy = 150;
+    Serial.print("Hey get moving we're on the clock!!!"); 
+
+    if (command == 7) {
+       set_to_manual();            
+    }
+}
+
+void investigate_maneuver() {
+    return;
+}
+
+void investigate_reset() {
+    Serial.println("Investigate mode deactivated");
+    pan_cent = true;
+    tilt_cent = true;
+    investigate = false;
+    cx = 200;
+    cy = 150;
+//    command = "";
+    receiveFlag = false;
+//    Serial.print("Pan_cent = ");
+//    Serial.println(pan_cent);
+//    Serial.print("Tilt_cent = ");
+//    Serial.println(tilt_cent);                    
+//    Serial.print("investigate = ");
+//    Serial.println(investigate);
+//    Serial.print("Center x = ");
+//    Serial.println(cx);
+//    Serial.print("Center y = ");
+//    Serial.println(cy);
+}
+
+void tilt_center() {
+    Serial.print("Tilt centered = ");
+    Serial.println(tilt_cent);
+    Serial.println("Now tilt to center object in view");                    
+    if (tilt_up == true) {
+        if (cy < mid_height - 10) {
+            if (tiltAngle > 0) {
+                tiltAngle-=2;       
+                servo2.write(tiltAngle);  
+                Serial.println("Tilting up");
+                delayMicroseconds(15);
+            }                                           
+        }
+    } else if (tilt_down == true) {
+        if (cy > mid_height + 10) { 
+            if (tiltAngle < 105) {
+                tiltAngle+=2;    
+                servo2.write(tiltAngle);  
+                Serial.println("Tilting down"); 
+                delayMicroseconds(15);
+            }
+        }                                                      
+    } else {
+        tilt_cent = true;                                                    
+    }
+}
+
+void pan_center() {
+    Serial.print("Pan centered = ");
+    Serial.println(pan_cent);
+    Serial.println("Now pan to center object in view");
+    if (pan_left == true) {
+        if (cx > mid_width + 10) {
+            if (panAngle > 35) {
+                panAngle-=2;
+                servo1.write(panAngle); 
+                Serial.println("Panning Left");
+                delayMicroseconds(15);                                    
+            } 
+        }
+    } else if (pan_right == true) {
+        if (cx < mid_width - 10) {
+            if (panAngle < 140) {
+                panAngle+=2;
+                servo1.write(panAngle);
+                Serial.println("Panning Right");
+                delayMicroseconds(15);
+            }                     
+        }
+    } else {
+        pan_cent = true;                                                    
+    }
+}
+
+
+void check_center() { 
+    Serial.println("Check centered position");
+    Serial.print("Cx = ");                        
+    Serial.println(cx);
+    
+    if (cx < mid_width - 10) {
+        pan_cent = false;
+        pan_left = true;
+        pan_right = false;
+        Serial.println("pan_left");
+  
+    } else if (cx > mid_width + 10) {
+        pan_cent = false;
+        pan_right = true;
+        pan_left = false;
+        Serial.println("pan_right");
+    } else {
+        pan_cent = true;
+    }   
+    if (cy < mid_height - 10) {
+        tilt_cent = false;
+        tilt_up = true;
+        tilt_down = false;
+        Serial.println("tilt_up");
+    } else if (cy > mid_height + 10) {
+        tilt_cent = false;
+        tilt_down = true;
+        tilt_up = false;
+        Serial.println("tilt_down");
+    } else {
+        tilt_cent = true;
+    }
+}
+ 
+int parse_cv_data(String cv_data) {
+    Serial.println("Parse string data");
     x1 = cv_data.substring(0, 3).toInt();
     y1 = cv_data.substring(3, 6).toInt();
     x2 = cv_data.substring(6, 9).toInt();
@@ -414,14 +662,40 @@ void parse_cv_data(String cv_data) {
     item = cv_data.substring(17,20).toInt();
     trigger = cv_data.substring(20,23).toInt();
     confirm = cv_data.substring(23, -1).toInt();
-    Serial.println(x1);
-    Serial.println(y1);
-    Serial.println(x2);
-    Serial.println(y2);
-    Serial.println(item);
-    Serial.println(trigger);
-    Serial.println(confirm);
+//    Serial.print("x1 = ");
+//    Serial.println(x1);
+//    Serial.print("y1 = ");
+//    Serial.println(y1);
+//    Serial.print("x2 = ");
+//    Serial.println(x2);
+//    Serial.print("y1 = ");
+//    Serial.println(y2);
+//    Serial.print("Item no = ");
+//    Serial.println(item);
+//    Serial.print("Trigger val = ");
+//    Serial.println(trigger);
+//    Serial.print("Confirmed = ");
+//    Serial.println(confirm);
+    box_width = x2 - x1;
+    box_height = y2 - y1;
+    left_width = (width - box_width)/2;
+    top_height = (height - box_height)/2;
+    
+    cx = (box_width / 2) + x1;
+    if (cx == 0) {
+        cx = 200;
     }
+    cy = (box_height / 2) + y1;
+    if (cy == 0) {
+        cy = 150;
+    }
+    Serial.print("Cx = ");
+    Serial.println(cx);
+    Serial.print("Cy = ");
+    Serial.println(cy);
+//    command == "000";
+//    cv_data = "";
+}
 
 float get_fwd_distance() {
     // Clears the trigPin
@@ -585,6 +859,13 @@ void maneuver() {
     float forD = get_fwd_distance();
     float forL = get_left_fwd_distance();
     float forR = get_right_fwd_distance();
+    Serial.println("First Test");
+    Serial.println(forD);
+    Serial.println(forL);
+    Serial.println(forR);
+    if (command == 7) {
+       set_to_manual();            
+    }
 
     if (forL < 30.00) {
         move_command(spin_right);
@@ -615,6 +896,14 @@ void maneuver() {
             float forD = get_fwd_distance();
             float forL = get_left_fwd_distance();
             float forR = get_right_fwd_distance();
+            Serial.println("Second test");
+            Serial.println(forD);
+            Serial.println(forL);
+            Serial.println(forR);
+        }
+
+        if (command == 7) {
+           set_to_manual();            
         }
 
         if ((forD + forL) > (forD + forR)) {
@@ -637,13 +926,16 @@ void maneuver() {
         } else if (forL < forR) {
             move_command(spin_right);
             Serial.println("Turning right");
-        } else if (forD < aftD) {
-            Serial.println("This vehicle is reversing");
-            move_command(reverse);
-        } else if (aftD < minDist){
+//        } else if (forD < aftD) {
+//            Serial.println("This vehicle is reversing");
+//            move_command(reverse);
+        } 
+        
+        if (aftD < minDist){
             move_command(all_stop);
         }
     }
+    receiveFlag = false;
 }
 
 

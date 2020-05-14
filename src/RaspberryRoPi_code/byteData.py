@@ -7,10 +7,14 @@ from globals2 import auto_mode
 bus = smbus.SMBus(1)
  
 send_count = 0
-max_send = 10
+max_send = 8
+command_list = ['002', '003', '004', '005', '008', '009', '010', '011', '012', '013', '014', '015', '016', '017', '018', '019', "021", "022", "023", "024"]
 
 # This is the I2C address setup in the Arduino Program
 address = 0x18
+#global auto_mode
+#auto_mode = False
+
 
 def writeData(value):
     byteValue = StringToBytes(value) 
@@ -26,34 +30,31 @@ def StringToBytes(val):
     return retVal
 
 def send_command(command):
-    print("byteData command: ", command)
-    
+    global command_list
     if command[0:3] == '007':
-        print("STOP")
+        print("Manual")
+        print("byteData command: ", command)
         writeData(command)
-
+        time.sleep(.1)
+        command = ""
+    
     if command[0:3] == '006':
         print("AUTO")
+        print("byteData command: ", command)
         writeData(command)
+        time.sleep(.1)
+        command = ""
         
-    
     if command[0:3] == '020':
-        global send_count
-        send_count+=1
-                    
-        if send_count == max_send: 
-            print("Sending investigate Command", command)
-            writeData(command)
-            time.sleep(.1)
-            send_count = 0
-        
-        if send_count > max_send:
-            send_count = 0
-        
-    elif command[0:3] in ['002', '003', '004', '005', '008', '009', '010', '011', '012', '013', '014', '015', '016', '017', '018', '019']:
-        print("Sending alternate Command", command)
-        
+        print("Sending investigate Command", command)            
         writeData(command)
+        time.sleep(.1)
+        command = ""
+        
+    elif command[0:3] in command_list:
+        print("Sending manual command", command)        
+        writeData(command)
+        command = ""
         time.sleep(.1)
 
 if __name__ == '__main__':
