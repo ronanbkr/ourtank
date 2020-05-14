@@ -5,8 +5,9 @@ import struct
 import base64
 import numpy as np
 import time
-
-def client3():
+from image_processing2 import image_processing_pi3
+ 
+def client3(night_mode):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect(('169.254.239.11', 8000))
     payload_size = struct.calcsize("I")
@@ -24,15 +25,20 @@ def client3():
         data = data[msg_size:]
         if frame_data=='':
             break
-        frame=pickle.loads(frame_data,encoding='latin1')
-        #img = base64.b64decode(frame_data)
-        #npimg = np.fromstring(img, dtype=np.uint8)
-        #frame = cv2.imdecode(npimg, 1)
-        #frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-        _,frame_bytes= cv2.imencode('.JPEG',frame)
+        #frame=pickle.loads(frame_data,encoding='latin1')
+        img = base64.b64decode(frame_data)
+        npimg = np.fromstring(img, dtype=np.uint8)
+        frame = cv2.imdecode(npimg, 1)
+        frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        if (night_mode=='True'):
+            processed_frame = image_processing_pi3(frame)
+            print(processsed_frame)
+            _,frame_bytes= cv2.imencode('.JPEG',processed_frame)
+        else:            
+            _,frame_bytes= cv2.imencode('.JPEG',frame)
         #print (time.time()-start)
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n')
-    #client_socket.close()
+    client_socket.close()
 
 def client4():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -62,5 +68,5 @@ def client4():
         #print (time.time()-start)
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n')
         #yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes.tostring()+ b'\r\n',frame_numpy[1])
-    #client_socket.close()
+    client_socket.close()
     

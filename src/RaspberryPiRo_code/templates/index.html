@@ -223,7 +223,6 @@
         }else {        
           document.getElementById('switchVal').innerHTML = "Manual"
           command = "manual"
-
         }
         send_command(command)
       }
@@ -240,11 +239,27 @@
           document.getElementById('lazerVal').innerHTML = "Lazer OFF"
           command = "lazeroff"
         }
-        var url = 'http://192.168.0.34:5000/control?command=' + command
-        send_request(url)
+        send_command(command)
       }
       
+      function switchNightValue(){
+        var swit_val =  document.getElementById("nightValue")
+        var command = ''
+        if (swit_val.checked == true){
+          document.getElementById('nightVal').innerHTML = "On"
+          command = "nighton"
+
+        }else {        
+          document.getElementById('nightVal').innerHTML = "Off"
+          command = "nightoff"
+
+        }
+        send_command(command)
+      }
       
+      function take_screenshot(){
+        send_command("take_photo")
+      }
       
     //  async function send_request(url){
     //     var xhr = new XMLHttpRequest();
@@ -269,7 +284,7 @@
   
 
     document.onkeydown = function(event) {
-      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", "c", "l", " ", "m"].includes(event.key)){
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", "c", "l", "m", " ", "p"].includes(event.key)){
           event.preventDefault()
           event.stopPropagation();
           direction = event.key
@@ -279,15 +294,19 @@
                 // on key 'l' pressed toggle the Lazer ON/OFF switch
                 document.getElementById('lazerValue').checked = !document.getElementById('lazerValue').checked
                 switch_lazer_value()
+                // direction = 'lazer
               } else if (event.key === 'm') {
                 // on key 'm' pressed toggle the Auto/Manual switch
                 document.getElementById('switchValue').checked = !document.getElementById('switchValue').checked
                 switch_value()
+              } else if(event.key === 'p') {
+                take_screenshot()
               } else {
                 // If event key is any other than 'l' or 'm' set class to the button that changes button color to red
                 document.getElementById(event.key).classList.add('controlPressed')
+                send_direction(direction)
               }
-              send_direction(direction)
+              
           }
       }
     }
@@ -295,15 +314,15 @@
     document.onkeyup = function(event) {
         event.preventDefault()
         keyDown = false;
-        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", "c", "l", "m", " "].includes(event.key)) {
-            if (event.key !== 'l') {
+        if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d", "c", "l", "m", " ", "p"].includes(event.key)) {
+            if (event.key !== 'l' && event.key !== 'm') {
               document.getElementById(event.key).classList.remove('controlPressed')
             }
             if (event.key === " ") {
               return
             }
             if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-              send_direction('manual')
+              send_command('manual')
             }
         }
     }
@@ -402,7 +421,7 @@
             </span>
             
           </label>
-          <p id='nightVal'>Lazer OFF</p>
+          <p id='nightVal'>Night OFF</p>
         </div>
         
       </div>

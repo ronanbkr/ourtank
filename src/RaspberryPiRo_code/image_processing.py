@@ -14,8 +14,13 @@ import pickle
 import struct
 import base64
 import numpy as np
+import os 
+import sys
+import datetime
+#from video_socket import client3_for4
 
 count = 0
+max_send = 10
 
 def image_processing():
     
@@ -27,8 +32,12 @@ def image_processing():
 
     output = {}
     img_counter = 1
+    object_list = ["", "background", "aeroplane", "bicycle", "bird",
+        "bottle", "bus", "car", "cat", "chair", "diningtable",
+        "person", "pottedplant",
+        "sofa", "train", "tvmonitor"]
 
-
+    # "cow", "boat", "motorbike","dog","horse","sheep",
     # initialize the list of class labels MobileNet SSD was trained to
     # detect, then generate a set of bounding box colors for each class
     CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
@@ -46,7 +55,7 @@ def image_processing():
     print("Test: Video Stream starting")
     vs = VideoStream(src=0).start()
     time.sleep(2)
-    confidence_limit = 0.5
+    confidence_limit = 0.6
     while True:
         try:
             (clientsocket,address)=server_socket.accept()
@@ -56,6 +65,7 @@ def image_processing():
                 start =time.time()
                 # Take one frame from the video and resize it
                 frame = vs.read()
+                #print  ('vs',frame)
                 frame = imutils.resize(frame, width=400)
 
                 # grab the frame dimensions and convert it to a blob
@@ -125,12 +135,14 @@ def image_processing():
                 #global globals2.auto_mode
                 #global auto_mode
                 #print(auto_mode)
-                with open('variable.pickle','rb') as variable:
-                    auto_mode = pickle.load(variable)
+                
+                auto_mode="False"
+                if os.path.exists('auto_mode.pickle'):
+                    with open('auto_mode.pickle','rb') as variable:
+                        auto_mode = pickle.load(variable)
                 if output != {} and output["true/false indicator"] == 1 and auto_mode == "True":                    
                     send_dict(output,'020')
                     output = {}
-
                  # Server sending frame in bytes format
                 
                 frame_data = pickle.dumps([frame,output])
@@ -151,19 +163,47 @@ def image_processing():
                 
                 # Takes a photo of the stream when c is pressed.
                 # Used for testing
-                # if key == ord("c"):
-                #    img_name = "screenshot_{}.png".format(img_counter)
-                #    cv2.imwrite(img_name, frame)
-                #    print("Screenshot captured.")
-                #    img_counter += 1
-                    
+                if os.path.exists('take_screenshot.pickle'):
+                    with open('take_screenshot.pickle','rb') as variable:
+                        screen_shot = pickle.load(variable)
+                    if screen_shot == 'True':
+                        found_value = "screenshot"             
+                        if output != {} and (output["confidence label"] ==1):
+                            found_value = CLASSES[output["detection label"]]                            
+                        img_name = "current_screenshots/{}_{}.png".format(found_value,img_counter)
+                        cv2.imwrite(img_name, frame)
+                        img_name = "all_screenshots/{}_{}.png".format(found_value,img_counter)
+                        cv2.imwrite(img_name, frame)
+                        img_counter += 1
+                        with open('log.txt','a') as f:
+                            temp_text="Investigate"
+                            if output["confidence label"] ==1:
+                                temp_text ="Confirm"
+                            text=" {} {} {} in {}\n".format(CLASSES[output["detection label"]],temp_text,output["confidence"],img_name)
+                            f.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+text)
+                    with open('take_screenshot.pickle','wb') as f:
+                        pickle.dump('False',f)  
 
                 # break once q is pressed
                 #if key == ord("q"):
                 #    break
                 print (time.time()-start)
-        except Exception as err:
-            print (str(err))
+        except KeyboardInterrupt:
+            if os.path.exists("take_screenshot.pickle"):
+                os.remove("take_screenshot.pickle")
+            if os.path.exists("auto_mode.pickle"):
+                os.remove("auto_mode.pickle")
+            server_socket.close()
+            # do a bit of cleanup
+            cv2.destroyAllWindows()
+            vs.stop()
+            return
+        except Exception as e:
+            print (str(e))
+            print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)
+            
+
+            
     # Socket Connection closed
     server_socket.close()
      
@@ -175,10 +215,12 @@ def image_processing():
 
 def send_dict(info,s):
     global count
+    global max_send
+    #print(max_send)
     try:
-        with open('variable.pickle','rb') as variable:
+        with open('auto_mode.pickle','rb') as variable:
             auto_mode = pickle.load(variable)
-        print("##########")
+        print("Auto_mode is ", auto_mode)
 
         if auto_mode == 'True':
             count+=1
@@ -194,7 +236,9 @@ def send_dict(info,s):
                     s+=v
                 else:    
                     s+=str(v) 
-            if count == 8:
+            #print(max_send)
+            #print(count)
+            if count == max_send:
                 client_socket.sendall(s.encode('utf-8')) 
                 count = 0      
                 print(s, len(s))
