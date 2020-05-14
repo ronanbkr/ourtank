@@ -13,9 +13,12 @@
       }
 
       .switchDiv {
-        
-        justify-items: auto;
-        display: inline-block;
+        width: 40%;
+        padding-left: 10%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        vertical-align: middle;
         margin: 20 0 20 0;
       }
       
@@ -117,28 +120,31 @@
       }
 
       .tank-controls { 
-        
+        display: inline-block;
       }
 
       .control-item {
         width: 500px; 
         display: inline-block;
-        /* text-align: center; */
-        /* align-content: center; */
         background-color: rgba(255, 255, 255, 0.8);
         border: 2px solid rgba(0, 0, 0, 0.8);
         border-radius: 50px;
         padding: 20px;
         margin-bottom: 20px;
       }
+
+      .control-contents {
+        padding: 20px;
+        display: flex;
+      }
       
       .controller {
-        /* width: fit-content; */
+        margin-left: 5%;
       }
       
       form {
-        /* margin: 0;
-        align: center; */
+        margin: 0;
+        align: center;
       }
       
       img {
@@ -261,12 +267,6 @@
         send_command("take_photo")
       }
       
-    //  async function send_request(url){
-    //     var xhr = new XMLHttpRequest();
-    //     xhr.open("GET", url, false);
-    //     xhr.send(null);         
-    // }
-      
      function choose(id, val){
         document.getElementById(id).classList.remove("control")
         document.getElementById(id).classList.add("controlPressed")
@@ -370,9 +370,10 @@
             <div class="control-item" style="background-color: rgb(176, 230, 255)" id="keycontrol">
               <h3>Movement controls</h3>
               <hr>
+              <div class="control-contents">
                 <!-- Rounded switch -->
                 <div class="switchDiv">
-                  
+                  <div style="display: flex; flex-direction: row;">
                   <label class="switch">
                     <input id="switchValue" type="checkbox" onclick="switch_value()">
                     <span class="slider round">
@@ -380,9 +381,17 @@
                   </label>
                   <p id='switchVal'>Manual</p>
                 </div>
-                
+                <div style="display: flex; flex-direction: row;">
+                  <label class="switch">
+                    <input id="nightValue" type="checkbox" onclick="switchNightValue()">
+                    <span class="slider round">
+                    </span>
+                  </label>
+                  <p id='nightVal'>Night OFF</p>
+                </div>
+                </div>
                 <br/>
-                <div align="center" class="controller">
+                <div class="controller">
                   <form>
                     <button id='ArrowUp' class="control"  
                   value='up' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
@@ -404,27 +413,14 @@
                     </button>
                   </form>
                 </div>
-                <p id='output'></p>    
+              </div>    
               </div>
               <div class="grid-item" style="max-weight:100%">2
                 <button onclick="getGPS()" id='gps' class='control' value='GPS' type="button" name="gps">GPS</button>
                 <p style="word-break: break-all;" id='gps_data'>    
                 </p>            
               </div> 
-      </div>  
-      <div class="grid-item">4
-        
-      <div class="switchDiv">
-          <label class="switch">
-            <input id="nightValue" type="checkbox" onclick="switchNightValue()">
-            <span class="slider round">
-            </span>
-            
-          </label>
-          <p id='nightVal'>Night OFF</p>
-        </div>
-        
-      </div>
+          </div>
     </div>
     <div class="grid-item">
       <h2>Tank controls</h2>
@@ -432,16 +428,17 @@
           <div class="control-item" style="background-color: rgb(255, 176, 213)" id="keycontrol">
             <h3>Camera controls</h3>
             <hr>
+            <div class="control-contents">
               <!-- Rounded switch -->
               <div class="switchDiv">
-                
-                <label class="switch">
-                  <input id="lazerValue" type="checkbox" onclick="switch_lazer_value()">
-                  <span class="slider round">
-                  </span>
-                  
-                </label>
-                <p id='lazerVal'>Lazer OFF</p>
+                <div style="display: flex; flex-direction: row;">
+                  <label class="switch">
+                    <input id="lazerValue" type="checkbox" onclick="switch_lazer_value()">
+                    <span class="slider round">
+                    </span>   
+                  </label>
+                  <p id='lazerVal'>Lazer OFF</p>
+                </div>
               </div>
               
               <br/>
@@ -467,10 +464,17 @@
                   </button>
                 </form>
               </div>
-              <p id='output'></p>    
+            </div>
           </div>
         </div>
       </div>
+      <div class="grid-item">4
+        
+        <div class="switchDiv">
+
+          </div>
+          
+        </div>
   
   </body>
       
