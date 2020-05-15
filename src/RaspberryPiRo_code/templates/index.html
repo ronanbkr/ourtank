@@ -7,19 +7,24 @@
       .switch {
         position: relative;
         display: inline-block;
-        width: 60px;
-        height: 34px;
+        width: 90px;
+        height: 51px;
         vertical-align: middle;
       }
 
+      p {
+        font-size: 20px;
+        vertical-align: middle; /* not currently working, need to figure out the way to center paragraph with slider */
+      }
+
       .switchDiv {
-        width: 40%;
-        padding-left: 10%;
+        width: 60%;
+        
         display: flex;
         flex-direction: column;
         justify-content: center;
         vertical-align: middle;
-        margin: 20 0 20 0;
+        margin: 30 0 30 0;
       }
       
 
@@ -49,22 +54,31 @@
       .slider:before {
         position: absolute;
         content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
+        height: 40px;
+        width: 40px;
+        left: 6px;
+        bottom: 6px;
         background-color: white;
         -webkit-transition: .4s;
         transition: .4s;
       }
       
+      .switchContents {
+        padding-left: 20%;
+        width: fit-content;
+        display: flex; 
+        flex-direction: row; 
+        align-items: center;
+      }
+
       h3 {
+        font-size: 50px;
         margin: 0 0 10px 0;
       }
 
       p {
         font-weight: 700;
-        padding-left: 20px;
+        padding-left: 30px;
         vertical-align: middle;
         display: inline-block;
       }
@@ -98,7 +112,7 @@
       }
 
       h4 {
-        font-size: 20px;;
+        font-size: 30px;;
         margin: 0;
       }
 
@@ -111,7 +125,6 @@
         text-align: center;
         align-content: center;
         display: block;
-        
         background-color: rgba(255, 255, 255, 0.8);
         border: 2px solid rgba(0, 0, 0, 0.8);
         border-radius: 50px;
@@ -119,12 +132,15 @@
         margin-bottom: 20px;
       }
 
-      .tank-controls { 
+      .tank-controls {
         display: inline-block;
       }
 
       .control-item {
-        width: 500px; 
+        vertical-align: middle;
+        width: 750px; 
+        height: 380px;
+        position: relative;
         display: inline-block;
         background-color: rgba(255, 255, 255, 0.8);
         border: 2px solid rgba(0, 0, 0, 0.8);
@@ -135,27 +151,34 @@
 
       .control-contents {
         padding: 20px;
+        height: 250px;
         display: flex;
       }
       
       .controller {
-        margin-left: 5%;
+        justify-items: center;
+        display: flex;
+        margin-left: -5%;
       }
       
       form {
-        margin: 0;
-        align: center;
+        padding: 0 10px;
+        margin-top: 3%;
       }
       
       img {
         margin: 0;
       }
       
-      .control {
+      .icon {
         width: 50px;
-        height: 50px;
+      }
+
+      .control {
+        width: 75px;
+        height: 75px;
         border-radius: 50px;
-        margin: 2px;
+        margin: 3px;
         -moz-box-shadow:    1px 1px 2px rgb(0,0,0);
         -webkit-box-shadow: 1px 1px 2px rgb(0,0,0);
         box-shadow:         1px 1px 2px rgb(0,0,0);
@@ -266,7 +289,7 @@
       function take_screenshot(){
         send_command("take_photo")
       }
-      
+
      function choose(id, val){
         document.getElementById(id).classList.remove("control")
         document.getElementById(id).classList.add("controlPressed")
@@ -355,17 +378,15 @@
 
   </head> 
   <body>
-    <h1>Demonstration</h1>
     
     <div class="grid-container">
-      <div class="grid-item">Day/Night Camera View
+      <div class="grid-item" style="margin: 0% 5% 0% 5%">Day/Night Camera View
         <img id ="video3" src="{{ url_for('video3') }}" width="100%">
       </div>
-      <div class="grid-item">Processed NN View
+      <div class="grid-item" style="margin: 0% 5% 0% 5%">Processed NN View
         <img id ="video4" src="{{ url_for('video4') }}" width="100%">
       </div>
-      <div class="grid-item">
-        <h2>Tank controls</h2>
+      <div class="grid-item" style="border: 0px;">
           <div class="tank-controls">
             <div class="control-item" style="background-color: rgb(176, 230, 255)" id="keycontrol">
               <h3>Movement controls</h3>
@@ -373,57 +394,53 @@
               <div class="control-contents">
                 <!-- Rounded switch -->
                 <div class="switchDiv">
-                  <div style="display: flex; flex-direction: row;">
+                  <div class="switchContents">
                   <label class="switch">
                     <input id="switchValue" type="checkbox" onclick="switch_value()">
                     <span class="slider round">
                     </span>
                   </label>
                   <p id='switchVal'>Manual</p>
+                  </div>
+                  <div class="switchContents">
+                    <label class="switch">
+                      <input id="nightValue" type="checkbox" onclick="switchNightValue()">
+                      <span class="slider round">
+                      </span>
+                    </label>
+                    <p id='nightVal'>Night OFF</p>
+                  </div>
                 </div>
-                <div style="display: flex; flex-direction: row;">
-                  <label class="switch">
-                    <input id="nightValue" type="checkbox" onclick="switchNightValue()">
-                    <span class="slider round">
-                    </span>
-                  </label>
-                  <p id='nightVal'>Night OFF</p>
-                </div>
-                </div>
+                <!-- <hr width="1" size="500"> -->
                 <br/>
+                
                 <div class="controller">
                   <form>
                     <button id='ArrowUp' class="control"  
                   value='up' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
-                    <img src="/static/arrow_upward.svg">
+                    <img class="icon" src="/static/arrow_upward.svg">
                   </button>
                   <br/>
                     <button id='ArrowLeft' class='control' value='left' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
-                      <img src="/static/arrow_back.svg">
+                      <img class="icon" src="/static/arrow_back.svg">
                     </button>
                     <button id=' ' class='control' value='stop' type = "button" name='Stop' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
-                      <img src="/static/stop.svg">
+                      <img class="icon" src="/static/stop.svg">
                     </button>
                     <button id='ArrowRight' class='control' value='right' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
-                      <img src="/static/arrow_forward.svg">
+                      <img class="icon" src="/static/arrow_forward.svg">
                     </button>
                     <br/>
                     <button id='ArrowDown' class='control' value='down' type = "button" name='Reverse' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
-                      <img src="/static/arrow_downward.svg">
+                      <img class="icon" src="/static/arrow_downward.svg">
                     </button>
                   </form>
                 </div>
               </div>    
               </div>
-              <div class="grid-item" style="max-weight:100%">2
-                <button onclick="getGPS()" id='gps' class='control' value='GPS' type="button" name="gps">GPS</button>
-                <p style="word-break: break-all;" id='gps_data'>    
-                </p>            
-              </div> 
           </div>
     </div>
-    <div class="grid-item">
-      <h2>Tank controls</h2>
+    <div class="grid-item" style="border: 0px;">
         <div class="tank-controls">
           <div class="control-item" style="background-color: rgb(255, 176, 213)" id="keycontrol">
             <h3>Camera controls</h3>
@@ -431,7 +448,7 @@
             <div class="control-contents">
               <!-- Rounded switch -->
               <div class="switchDiv">
-                <div style="display: flex; flex-direction: row;">
+                <div class="switchContents">
                   <label class="switch">
                     <input id="lazerValue" type="checkbox" onclick="switch_lazer_value()">
                     <span class="slider round">
@@ -439,8 +456,12 @@
                   </label>
                   <p id='lazerVal'>Lazer OFF</p>
                 </div>
+                <div class="switchContents">
+                  <button style="width: 200px; font-size: 20px; font-weight: 700; height: 51px;" onclick="getGPS()" id='gps' class='control' value='GPS' type="button" name="gps">GPS and Image</button>
+                  <p style="word-break: break-all;" d='gps_data '>
+                  </p>  
+                </div>
               </div>
-              
               <br/>
               <div align="center" class="controller">
                 <form>
@@ -468,13 +489,6 @@
           </div>
         </div>
       </div>
-      <div class="grid-item">4
-        
-        <div class="switchDiv">
-
-          </div>
-          
-        </div>
   
   </body>
       
