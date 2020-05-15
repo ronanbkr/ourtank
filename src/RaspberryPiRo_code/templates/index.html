@@ -1,5 +1,6 @@
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demonstration</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <style>
@@ -64,7 +65,7 @@
       }
       
       .switchContents {
-        padding-left: 20%;
+        /* padding-left: 5% */
         width: fit-content;
         display: flex; 
         flex-direction: row; 
@@ -138,7 +139,7 @@
 
       .control-item {
         vertical-align: middle;
-        width: 750px; 
+        /* width: 6;  */
         height: 380px;
         position: relative;
         display: inline-block;
@@ -158,12 +159,13 @@
       .controller {
         justify-items: center;
         display: flex;
-        margin-left: -5%;
+        
       }
       
       form {
+        
         padding: 0 10px;
-        margin-top: 3%;
+        /* margin-top: 3%; */
       }
       
       img {
@@ -374,10 +376,19 @@
     //     })
     //    }, 500); 
     //  }   
+    function calculateHeight() {
+      const height = window.innerHeight|| document.documentElement.clientHeight|| 
+      document.body.clientHeight;
+    }
+    
+    function calculateWidth() {
+      const width  = window.innerWidth || document.documentElement.clientWidth || 
+      document.body.clientWidth;
+    }
     </script>
 
   </head> 
-  <body>
+  <body style="max-width: calculateWidth(); max-height: calculateHeight() ;">
     
     <div class="grid-container">
       <div class="grid-item" style="margin: 0% 5% 0% 5%">Day/Night Camera View
@@ -420,7 +431,7 @@
                   value='up' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
                     <img class="icon" src="/static/arrow_upward.svg">
                   </button>
-                  <br/>
+                  <div style="display: inline-block;">
                     <button id='ArrowLeft' class='control' value='left' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
                       <img class="icon" src="/static/arrow_back.svg">
                     </button>
@@ -430,7 +441,7 @@
                     <button id='ArrowRight' class='control' value='right' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
                       <img class="icon" src="/static/arrow_forward.svg">
                     </button>
-                    <br/>
+                  </div>
                     <button id='ArrowDown' class='control' value='down' type = "button" name='Reverse' onmouseup="stop(this.id)" onmousedown="choose(this.id, this.value)">
                       <img class="icon" src="/static/arrow_downward.svg">
                     </button>
@@ -467,19 +478,19 @@
                 <form>
                   <button id='w' class="control" 
                 value='w' type = "button" name='Forward' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
-                  <h4>W</h4>
-                </button>
-                <br/>
-                  <button id='a' class='control' value='a' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
-                    <h4>A</h4>
+                    <h4>W</h4>
                   </button>
-                  <button id='c' class='control' value='c' type = "button" name='Stop' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
-                    <h4>C</h4>
-                  </button>
-                  <button id='d' class='control' value='d' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
-                    <h4>D</h4>
-                  </button>
-                  <br/>
+                  <div style="display: inline-block;">
+                    <button id='a' class='control' value='a' type = "button" name='Left' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                      <h4>A</h4>
+                    </button>
+                    <button id='c' class='control' value='c' type = "button" name='Stop' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                      <h4>C</h4>
+                    </button>
+                    <button id='d' class='control' value='d' type = "button" name='Right' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
+                      <h4>D</h4>
+                    </button>
+                  </div>
                   <button id='s' class='control' value='s' type = "button" name='Reverse' onmouseup="stop(this.id)" onmousedown="choose(this.id,this.value)">
                     <h4>S</h4>
                   </button>
