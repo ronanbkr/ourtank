@@ -8,13 +8,15 @@
       .switch {
         position: relative;
         display: inline-block;
-        width: 90px;
-        height: 51px;
+        width: 80px;
+        height: 41px;
         vertical-align: middle;
       }
 
       p {
+        padding: 0;
         font-size: 20px;
+        
         vertical-align: middle; /* not currently working, need to figure out the way to center paragraph with slider */
       }
 
@@ -55,8 +57,8 @@
       .slider:before {
         position: absolute;
         content: "";
-        height: 40px;
-        width: 40px;
+        height: 30px;
+        width: 30px;
         left: 6px;
         bottom: 6px;
         background-color: white;
@@ -68,8 +70,8 @@
         /* padding-left: 5% */
         width: fit-content;
         display: flex; 
-        flex-direction: row; 
-        align-items: center;
+        flex-direction: column; 
+        /* align-items: center; */
       }
 
       h3 {
@@ -79,7 +81,8 @@
 
       p {
         font-weight: 700;
-        padding-left: 30px;
+        /* padding-left: 30px; */
+        /* padding-bottom: 20px; */
         vertical-align: middle;
         display: inline-block;
       }
@@ -139,8 +142,10 @@
 
       .control-item {
         vertical-align: middle;
-        /* width: 6;  */
+        max-width: 600px; 
+        width: 50em;  
         height: 380px;
+        
         position: relative;
         display: inline-block;
         background-color: rgba(255, 255, 255, 0.8);
@@ -164,7 +169,8 @@
       
       form {
         
-        padding: 0 10px;
+        padding: 30px 10px;
+        margin: 0 auto;
         /* margin-top: 3%; */
       }
       
@@ -173,12 +179,12 @@
       }
       
       .icon {
-        width: 50px;
+        width: 45px;
       }
 
       .control {
-        width: 75px;
-        height: 75px;
+        width: 60px;
+        height: 60px;
         border-radius: 50px;
         margin: 3px;
         -moz-box-shadow:    1px 1px 2px rgb(0,0,0);
@@ -404,22 +410,27 @@
               <hr>
               <div class="control-contents">
                 <!-- Rounded switch -->
+                
                 <div class="switchDiv">
+                  
                   <div class="switchContents">
+                    <p id='switchVal'>Manual</p>
                   <label class="switch">
                     <input id="switchValue" type="checkbox" onclick="switch_value()">
                     <span class="slider round">
                     </span>
                   </label>
-                  <p id='switchVal'>Manual</p>
+                  
                   </div>
+                  
                   <div class="switchContents">
+                    <p id='nightVal'>Night OFF</p>
                     <label class="switch">
                       <input id="nightValue" type="checkbox" onclick="switchNightValue()">
                       <span class="slider round">
                       </span>
                     </label>
-                    <p id='nightVal'>Night OFF</p>
+                    
                   </div>
                 </div>
                 <!-- <hr width="1" size="500"> -->
@@ -460,15 +471,15 @@
               <!-- Rounded switch -->
               <div class="switchDiv">
                 <div class="switchContents">
+                  <p id='lazerVal'>Lazer OFF</p>
                   <label class="switch">
                     <input id="lazerValue" type="checkbox" onclick="switch_lazer_value()">
                     <span class="slider round">
                     </span>   
                   </label>
-                  <p id='lazerVal'>Lazer OFF</p>
                 </div>
                 <div class="switchContents">
-                  <button style="width: 200px; font-size: 20px; font-weight: 700; height: 51px;" onclick="getGPS()" id='gps' class='control' value='GPS' type="button" name="gps">GPS and Image</button>
+                  <button style="width: fit-content; font-size: 20px; font-weight: 700; height: 51px; margin-top: 30px" onclick="getGPS()" id='gps' class='control' value='GPS' type="button" name="gps">GPS + Img</button>
                   <p style="word-break: break-all;" d='gps_data '>
                   </p>  
                 </div>
