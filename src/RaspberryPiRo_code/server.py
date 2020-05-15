@@ -1,6 +1,6 @@
 import flask
 import os
-from flask import Flask, Response,  send_file, request, render_template,jsonify,make_response
+from flask import Flask, Response, send_from_directory, send_file, request, render_template,jsonify,make_response,redirect
 from picamera import PiCamera
 import cv2
 import socket 
@@ -16,6 +16,11 @@ import pickle
 
 app = Flask(__name__)
 CORS(app)
+
+DOWNLOAD_FOLDER = os.path.dirname(os.path.abspath(__file__))
+
+app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
+
 ######################## Raw Data #######################
 
 log_ls=[]
@@ -46,7 +51,23 @@ def write_log():
     with open('log.txt','a') as f:
         for command in log_ls:
             f.write(command+"\n")
+    with open('current_log.txt','a') as fi:
+        for command in log_ls:
+            fi.write(command+"\n")
 
+@app.route('/download', methods=['GET'])
+def download_log():
+    return send_from_directory(app.config['DOWNLOAD_FOLDER'], "log.txt", as_attachment=True)
+        
+@app.route('/clear_log',methods=['GET'])
+def clear_log_fil():
+    global log_ls
+    log_ls = []
+    with open("current_log.txt","wb") as f:
+        f.write(b"")
+    
+    return redirect("/log_page")
+    
 @app.route('/video4',methods=['GET'])
 def video4():
     try:
@@ -73,7 +94,8 @@ def video3():
 @app.route('/get_gps',methods=['GET'])
 def get_data():
     data=getData()
-    return (jsonify(data))
+    print(data)
+    return jsonify(data)
 
 @app.route('/get_data', methods=['GET'])
 def info():
@@ -181,7 +203,6 @@ def control():
                 print(command)
                 log_ls.append(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+' Sending Command: '+command_dict[s])                
                 if len(log_ls)==max_command:
-                    print("logging")
                     write_log()
                     log_ls=[]
                 return command
@@ -207,6 +228,12 @@ def video_page():
         print(str(e))
     #return render_template('index.html',message=jsonify(data))
     return render_template('index.html')
+
+@app.route('/log_page',methods = ['GET'])
+def log_page():
+    with open('current_log.txt','rb') as f:
+        data = f.readlines()
+    return render_template('log_page.html',data=data)
 
 @app.route('/',methods=['GET'])
 def home_page():

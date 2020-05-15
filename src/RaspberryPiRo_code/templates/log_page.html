@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+</head>
+<body>
+
+<p>
+<a href="{{url_for('clear_log_fil')}}"><button>Clear</button></a>
+<a href="/download"><button>Download</button></a>
+    
+{% for your_list_element in data %}
+  <p>{{ your_list_element.decode('utf-8') }} </p>
+{% endfor %}
+
+</p>
+
+</body>
+</html>

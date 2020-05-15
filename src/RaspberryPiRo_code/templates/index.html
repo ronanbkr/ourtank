@@ -231,6 +231,16 @@
         await send_request(url)
       }
       
+      async function send_api(url){
+        await send_request(url)
+      }
+      
+      function download_log(){
+        var url = 'http://192.168.0.34:5000/download'
+        console.log(url)
+        send_api(url)
+      }
+      
       function getData(url){
         send_request(url)
       }
@@ -511,7 +521,10 @@
           </div>
         </div>
       </div>
-  
+
+      <button onclick="window.open('http://192.168.0.34:5000/log_page','_blank')">View</button>
+      <a href="/download"><button>Download</button></a>
+      <p></p>
   </body>
       
 </html>
