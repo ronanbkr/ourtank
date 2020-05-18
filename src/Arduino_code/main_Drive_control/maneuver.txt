@@ -1,0 +1,81 @@
+void maneuver() {
+
+     float forD = get_fwd_distance();
+     float forL = get_left_fwd_distance();
+     float forR = get_right_fwd_distance();
+     Serial.println("First Test");
+     Serial.println(forD);
+     Serial.println(forL);
+     Serial.println(forR);
+     if (command == 7) {
+        set_to_manual();            
+     }
+ 
+     if (forL < 30.00) {
+         move_command(spin_right);
+     } else if (forR < 30.00) {
+         move_command(spin_left);
+     }
+ 
+     if (forD > maxDist) {
+         Serial.println("Max Distance -- Forward full speed");
+         move_command(move_fwd_full);
+         // break;
+     } else if (forD > mi1Dist && forD < maxDist) {
+         Serial.println("Mid 1 Range -- Forward Mid 1 speed");
+         move_command(move_fwd_mi1);
+         // break;
+     } else if (forD > mi2Dist && forD < mi1Dist) {
+         Serial.println("Mid 2 Range -- Forward Mid 2 speed");
+         move_command(move_fwd_mi2);
+         // break;
+     } else if (forD > minDist && forD < mi1Dist) {
+         Serial.println("Min Distance -- Forward close speed");
+         move_command(move_fwd_close);
+         // break;
+         if (forD < minDist) {
+             move_command(all_stop);
+             float forD = get_fwd_distance();
+             float forL = get_left_fwd_distance();
+             float forR = get_right_fwd_distance();
+             Serial.println("Second test");
+             Serial.println(forD);
+             Serial.println(forL);
+             Serial.println(forR);
+         }
+ 
+         if (command == 7) {
+            set_to_manual();            
+         }
+ 
+         if ((forD + forL) > (forD + forR)) {
+             Serial.println("Turning left");
+             move_command(turn_left);
+         } else {
+             Serial.println("Turning right");
+             move_command(turn_right);
+         }
+ 
+         if (forL + forR < 10.00)
+         float forD = get_fwd_distance();
+         float forL = get_left_fwd_distance();
+         float forR = get_right_fwd_distance();
+         float aftD = get_aft_distance();
+ 
+        if (forL > forR) {
+             move_command(spin_left);
+             Serial.println("Turning left");
+         } else if (forL < forR) {
+             move_command(spin_right);
+             Serial.println("Turning right");
+ //        } else if (forD < aftD) {
+ //            Serial.println("This vehicle is reversing");
+ //            move_command(reverse);
+         } 
+         
+         if (aftD < minDist){
+             move_command(all_stop);
+         }
+     }
+     receiveFlag = false;
+}
