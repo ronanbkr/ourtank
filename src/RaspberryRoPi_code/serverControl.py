@@ -3,18 +3,21 @@ from byteData import *
 import socket
 
 def sendCommand():
+    # Create an INET, STREAMing socket
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Bind the socket to the address
     server_socket.bind(('169.254.239.11', 4000))
+    # Enable the server to listen to number of connections
     server_socket.listen(5)
-    while True:        
+    while True:
+        # Accept a connection
         (clientsocket,address)=server_socket.accept()
-        #print ('Connected')
+        # Receive data from the socket and decode the data
         command = clientsocket.recv(2048).decode('utf-8')
         if command != "":
-            #print (command)
             try:
+                # Send the data to Arduino
                 send_command(command)
-                #command = ""
             except Exception as ex:
                 print (ex)
        
