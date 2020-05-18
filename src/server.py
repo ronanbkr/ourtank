@@ -13,6 +13,7 @@ import datetime
 from video_socket import *
 from getData import *
 import pickle
+import ast
 
 app = Flask(__name__)
 CORS(app)
@@ -55,9 +56,13 @@ def write_log():
         for command in log_ls:
             fi.write(command+"\n")
 
-@app.route('/download', methods=['GET'])
+@app.route('/download')
 def download_log():
-    return send_from_directory(app.config['DOWNLOAD_FOLDER'], "log.txt", as_attachment=True)
+    #return send_from_directory(app.config['DOWNLOAD_FOLDER'], "current_log.txt", as_attachment=True)
+    return send_file('current_log.txt',
+                     mimetype='text/text',
+                     attachment_filename='current_log.txt',
+                     as_attachment=True)
         
 @app.route('/clear_log',methods=['GET'])
 def clear_log_fil():
@@ -93,9 +98,20 @@ def video3():
 
 @app.route('/get_gps',methods=['GET'])
 def get_data():
-    data=getData()
-    print(data)
-    return jsonify(data)
+    data=ast.literal_eval(getData()["GPSData:"])
+    text_data=" "
+    for i in range(len(data)):
+        if i%2==1:
+            text_data+=data[i]+" "
+        else:
+            text_data+=data[i]
+    with open('current_log.txt','a') as fi:
+        fi.write(text_data+"\n")
+    with open('log.txt','a') as f:
+        f.write(text_data+"\n")
+    with open('take_screenshot.pickle','wb') as f:
+        pickle.dump('True',f)
+    return text_data
 
 @app.route('/get_data', methods=['GET'])
 def info():

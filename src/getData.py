@@ -13,4 +13,5 @@ def getData():
         pass
         
 if __name__=='__main__':
-    getData()
+    data=getData()
+    print (data)

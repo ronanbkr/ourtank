@@ -112,7 +112,7 @@ def image_processing():
                             y = startY - 15 if startY - 15 > 15 else startY + 15
                             cv2.putText(frame, label, (startX, y),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
-                            output["confidence label"] = 0
+                            output["confidence"] = 0
                         else:
                             label = "{}: {:.2f}% Confirmed".format(CLASSES[idx], final_confidence)
                             cv2.rectangle(frame, (startX, startY), (endX, endY),
@@ -137,7 +137,7 @@ def image_processing():
                 #print(auto_mode)
                 
                 auto_mode="False"
-                if os.path.exists('auto_mode.pickle'):
+                if os.path.exists('auto_mode.pickle') and os.path.getsize('auto_mode.pickle') > 0:
                     with open('auto_mode.pickle','rb') as variable:
                         auto_mode = pickle.load(variable)
                 if output != {} and output["true/false indicator"] == 1 and auto_mode == "True":                    
@@ -163,7 +163,7 @@ def image_processing():
                 
                 # Takes a photo of the stream when c is pressed.
                 # Used for testing
-                if os.path.exists('take_screenshot.pickle'):
+                if os.path.exists('take_screenshot.pickle') and os.path.getsize('take_screenshot.pickle') > 0:
                     with open('take_screenshot.pickle','rb') as variable:
                         screen_shot = pickle.load(variable)
                     if screen_shot == 'True':
@@ -187,7 +187,7 @@ def image_processing():
                 # break once q is pressed
                 #if key == ord("q"):
                 #    break
-                print (time.time()-start)
+                # print (time.time()-start)
         except KeyboardInterrupt:
             if os.path.exists("take_screenshot.pickle"):
                 os.remove("take_screenshot.pickle")
