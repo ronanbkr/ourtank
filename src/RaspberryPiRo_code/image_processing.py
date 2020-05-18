@@ -65,7 +65,6 @@ def image_processing():
                 start =time.time()
                 # Take one frame from the video and resize it
                 frame = vs.read()
-                #print  ('vs',frame)
                 frame = imutils.resize(frame, width=400)
 
                 # grab the frame dimensions and convert it to a blob
@@ -126,16 +125,6 @@ def image_processing():
                 #cv2.imshow("FrameServer", frame)
                 #key = cv2.waitKey(1) & 0xFF
                 
-                # For now print output, it will later be sent on to Ronan.
-                
-                #if output !={}:
-                #    with open('output.pickle', 'wb') as handle:
-                #        pickle.dump(output, handle, protocol=pickle.HIGHEST_PROTOCOL)
-                #print (output)
-                #global globals2.auto_mode
-                #global auto_mode
-                #print(auto_mode)
-                
                 auto_mode="False"
                 if os.path.exists('auto_mode.pickle') and os.path.getsize('auto_mode.pickle') > 0:
                     with open('auto_mode.pickle','rb') as variable:
@@ -156,11 +145,7 @@ def image_processing():
                 frame_data = p + frame_data
                 clientsocket.sendall(frame_data)
                 #clientsocket.close()
-                
-                # For now print output, it will later be sent on to Ronan.
-                #print(output)
-               
-                
+
                 # Takes a photo of the stream when c is pressed.
                 # Used for testing
                 if os.path.exists('take_screenshot.pickle') and os.path.getsize('take_screenshot.pickle') > 0:
@@ -235,9 +220,7 @@ def send_dict(info,s):
                         v = "00" + v
                     s+=v
                 else:    
-                    s+=str(v) 
-            #print(max_send)
-            #print(count)
+                    s+=str(v)
             if count == max_send:
                 client_socket.sendall(s.encode('utf-8')) 
                 count = 0      
