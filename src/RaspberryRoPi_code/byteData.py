@@ -2,7 +2,6 @@
 
 import smbus
 import time
-from globals2 import auto_mode
 
 bus = smbus.SMBus(1)
  
@@ -12,9 +11,6 @@ command_list = ['002', '003', '004', '005', '008', '009', '010', '011', '012', '
 
 # This is the I2C address setup in the Arduino Program
 address = 0x18
-#global auto_mode
-#auto_mode = False
-
 
 def writeData(value):
     byteValue = StringToBytes(value) 

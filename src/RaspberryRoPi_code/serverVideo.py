@@ -33,7 +33,7 @@ def sendVideo():
                 size = len(frame)
                 p = struct.pack('I', size)
                 frame = p + frame
-                print (time.time()-start)
+                #print (time.time()-start)
                 clientsocket.sendall(frame)
         except Exception as err:
                 print (str(err))
