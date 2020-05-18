@@ -28,22 +28,23 @@ def getGPSdata():
                         msg = data.decode('utf-8').split(',')
                         #print ("Im in here now")
                         #msgTime = msg.timestamp
-                        msgTime = msg[0]
+                        msgTime = msg[0].encode("ascii")
                         #latD = msg.latitude
-                        latM = msg[1]
-                        latD = msg[2]
-                        lonM = msg[3]
-                        lonD = msg[4]
-                        satquality = msg[5]
-                        noSats = msg[6]
-                        horz = msg[7]
-                        alt = msg[8]
-                        alt_units = msg[9]
-                        geo_sep = msg[10]
-                        refSta = msg[-1]
+                        latM = msg[2].encode("ascii")
+                        latD = msg[3].encode("ascii")
+                        lonM = msg[4].encode("ascii")
+                        lonD = msg[5].encode("ascii")
+                        satquality = msg[6].encode("ascii")
+                        noSats = msg[7].encode("ascii")
+                        horz = msg[8].encode("ascii")
+                        alt = msg[9].encode("ascii")
+                        alt_units = msg[10].encode("ascii")
+                        geo_sep = msg[11].encode("ascii")
+                        refSta = msg[-1].encode("ascii")
                         if (latM != '' and lonM != ''):
                                 run = False
-                                return [latM, latD,lonM, lonD, satquality, noSats, horz, alt, alt_units, geo_sep, refSta]
+                                
+                                return( ["Latitude:", latM + latD, "Longitude:", lonM + lonD, "Satalite Quality:", satquality, "Available Satalites:", noSats, "Altitude:", alt + alt_units])
                         
                         #latM = str(msg.latitude_minutes)
                         #latS = msg.latitude_seconds
@@ -64,28 +65,28 @@ def getGPSdata():
                         #msgAge = msg.age_gps_data
                         #refSta = msg.ref_station_id
 
-                        # Time
+                         ##Time
                         #print (msgTime)
                         
-                        # Latitude
-                        #print("Latitude: {:.0f},{},{:.4f}".format(latD, latM[:2], latS))
+                         ##Latitude
+                        #print("Latitude: {:.0f},{},{:.4f}".format(latD, latM[:2]))#, latS))
 
-                        # Longitude
-                        #print("Lonitude: {:.0f},{},{:.4f}".format(abs(lonD), lonM[:2], lonS))
+                         ##Longitude
+                        #print("Lonitude: {:.0f},{},{:.4f}".format(abs(lonD), lonM[:2]))#, lonS))
 
-                        # GPS Quality
+                         ##GPS Quality
                         #print("GPS Quality: " + str(gpsQ))
 
-                        # Number of Satelites
+                         ##Number of Satelites
                         #print("Number of satelites: " + str(numSat))
 
-                        # Horizontal
+                         ##Horizontal
                         #print("Horizontal dil: " + str(horizontal))
 
-                        # Altitude
+                        ## Altitude
                         #print("Altitude: " + str(alt) + str(unit.lower()))
 
-                        # Geo Separation
+                         ##Geo Separation
                         ##print("Geo seperation: " + str(sep) + str(sepUnits.lower()))
                         
                         #gpsData = [msgTime, latD, latM, latS, latDir, lonD, lonM, lonS, lonDir, gpsQ, numSat, horizontal, alt, unit, sep, sepUnits]
